@@ -6,16 +6,14 @@ Bienvenido al repositorio del **Proyecto Biblioteca Virtual**, una aplicación w
 
 ## Integrantes del Equipo
 
-> [!NOTE]
-> *Reemplaza la siguiente lista con los nombres e información de los integrantes de tu grupo:*
 
 | N° | Nombres y Apellidos | Código / Matrícula |
 |:--:|:--------------------|:-------------------|
 | 1  | [Adrianzen La Rosa Milton Rodrigo] | [U23200543] |
 | 2  | [Orellano Sánchez Gabriel] | [U23205074] |
-| 3  | [Taboada Burgos William Miguel ] | [U23214227] |
-| 4  | [Gonzales Escalante Jhair Itiel ] | [U23270363] |
-| 5  | [Cortez Sandoval Juan David ] | [U23215010] |
+| 3  | [Taboada Burgos William Miguel] | [U23214227] |
+| 4  | [Gonzales Escalante Jhair Itiel] | [U23270363] |
+| 5  | [Cortez Sandoval Juan David] | [U23215010] |
 ---
 
 ##  Características Principal

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Semana 1 - Variables y Estructuras de Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            line-height: 1.6;
+            color: #000;
+            background-color: #fff;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            font-size: 17px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            max-width: 650px;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 6px 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        ul {
+            margin: 10px 0 10px 20px;
+            font-size: 14px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 6px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Demostracion: Variables y Estructuras de Control en Java</h1>
+    <p><strong>Curso:
+            <span th:text="${nombreCurso}"></span>
+            <br>
+        </strong>
+        <strong>Servidor:</strong> localhost:8080
+    </p>
+
+    <h2>1. Variables y Constantes</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo de Dato</th>
+                <th>Nombre de Variable</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>final String (Constante)</td>
+                <td>NOMBRE_CURSO</td>
+                <td th:text="${nombreCurso}"></td>
+            </tr>
+            <tr>
+                <td>final double (Constante)</td>
+                <td>TASA_IGV</td>
+                <td th:text="${tasaIgv}"></td>
+            </tr>
+            <tr>
+                <td>byte</td>
+                <td>nivelAcceso</td>
+                <td th:text="${nivelAcceso}"></td>
+            </tr>
+            <tr>
+                <td>short</td>
+                <td>anioIngreso</td>
+                <td th:text="${anioIngreso}"></td>
+            </tr>
+            <tr>
+                <td>int</td>
+                <td>edad</td>
+                <td th:text="${edad}"></td>
+            </tr>
+            <tr>
+                <td>long</td>
+                <td>idEstudiante</td>
+                <td th:text="${idEstudiante} + 'L'"></td>
+            </tr>
+            <tr>
+                <td>float</td>
+                <td>pesoKg</td>
+                <td th:text="${pesoKg} + 'f'"></td>
+            </tr>
+            <tr>
+                <td>double</td>
+                <td>nota</td>
+                <td th:text="${nota}"></td>
+            </tr>
+            <tr>
+                <td>char</td>
+                <td>seccion</td>
+                <td th:text="'\'' + ${seccion} + '\''"></td>
+            </tr>
+            <tr>
+                <td>boolean</td>
+                <td>estaMatriculado</td>
+                <td th:text="${estaMatriculado}"></td>
+            </tr>
+            <tr>
+                <td>String</td>
+                <td>nombre</td>
+                <td th:text="'&quot;' + ${nombre} + '&quot;'"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>2. Validaciones con Estructuras de Control</h2>
+    <ul>
+        <li>
+            <strong>Validacion de Edad (if / else if / else):</strong>
+            <span th:text="${validacionEdad}"></span> (Edad evaluada: <span th:text="${edad}"></span>)
+        </li>
+        <li>
+            <strong>Estado Academico (if / else):</strong>
+            <span th:text="${estadoAcademico}"></span> (Nota evaluada: <span th:text="${nota}"></span>)
+        </li>
+        <li>
+            <strong>Beneficio de Membresia (switch):</strong>
+            <span th:text="${tipoMembresia}"></span> - <span th:text="${beneficioMembresia}"></span>
+        </li>
+        <li>
+            <strong>Estado de Matricula (Operador Ternario):</strong>
+            <span th:text="${estadoMatricula}"></span>
+        </li>
+    </ul>
+
+</body>
+
+</html>

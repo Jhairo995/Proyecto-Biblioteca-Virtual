@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class EjemplodemoApplication {
+public class BibliotecaVirtualApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(EjemplodemoApplication.class, args);
+		SpringApplication.run(BibliotecaVirtualApplication.class, args);
 	}
 
 }

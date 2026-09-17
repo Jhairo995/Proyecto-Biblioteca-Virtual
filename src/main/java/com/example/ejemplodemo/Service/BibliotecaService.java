@@ -1,4 +1,4 @@
-package com.example.ejemplodemo.Service;
+package com.example.ejemplodemo.service;
 
 public class BibliotecaService {
 }

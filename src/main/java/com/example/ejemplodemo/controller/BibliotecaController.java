@@ -13,13 +13,15 @@ public class BibliotecaController {
     public static final double TASA_IGV = 0.18;
     public static final int EDAD_MINIMA_LEGAL = 18;
 
-    @GetMapping("/")
+    // AQUI ESTA EL CAMBIO: Se liberó la ruta "/" para tu menú principal
+    @GetMapping("/ejemplo-clase")
     public String mostrarEnPantalla(
             @RequestParam(defaultValue = "Carlos Silva") String nombreEstudiante,
             @RequestParam(defaultValue = "20") int edadEstudiante,
             @RequestParam(defaultValue = "16.5") double notaFinal,
             @RequestParam(defaultValue = "VIP") String tipoMembresia,
             Model model) {
+        
         // 1. VARIABLES
 
         // Enteros

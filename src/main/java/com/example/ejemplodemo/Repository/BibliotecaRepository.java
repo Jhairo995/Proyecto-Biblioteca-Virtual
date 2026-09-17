@@ -1,4 +1,4 @@
-package com.example.ejemplodemo.Repository;
+package com.example.ejemplodemo.repository;
 
 public class BibliotecaRepository {
 }

@@ -1,7 +1,7 @@
 package com.example.ejemplodemo.controller;
 
 import com.example.ejemplodemo.model.Usuario;
-import com.example.ejemplodemo.service.UsuarioService;
+import com.example.ejemplodemo.Service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,16 +23,14 @@ public class AuthController {
         try {
             Usuario nuevoUsuario = usuarioService.registrarUsuario(usuario);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                "mensaje", "Usuario registrado exitosamente",
-                "id", nuevoUsuario.getId(),
-                "nombre", nuevoUsuario.getNombre(),
-                "correo", nuevoUsuario.getCorreo(),
-                "nivelCuenta", nuevoUsuario.getNivelCuenta().name()
-            ));
+                    "mensaje", "Usuario registrado exitosamente",
+                    "id", nuevoUsuario.getId(),
+                    "nombre", nuevoUsuario.getNombre(),
+                    "correo", nuevoUsuario.getCorreo(),
+                    "nivelCuenta", nuevoUsuario.getNivelCuenta().name()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-                "error", e.getMessage()
-            ));
+                    "error", e.getMessage()));
         }
     }
 

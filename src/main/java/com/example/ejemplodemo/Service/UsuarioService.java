@@ -26,6 +26,7 @@ public class UsuarioService {
             throw new IllegalArgumentException("El correo ya está registrado en el sistema.");
         }
 
+        // Encriptación irreversible de contraseña antes de persistir
         usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
 
         return usuarioRepository.save(usuario);

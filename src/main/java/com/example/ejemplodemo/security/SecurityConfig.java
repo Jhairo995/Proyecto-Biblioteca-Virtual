@@ -13,14 +13,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) 
+            // Desactivado temporalmente para permitir peticiones POST desde formularios y APIs sin tokens CSRF
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/inicio/**").permitAll() 
-                .anyRequest().authenticated() 
+                // Rutas públicas: Vistas web principales y archivos estáticos (CSS, JS, imágenes)
+                .requestMatchers("/", "/login", "/admin", "/css/**", "/js/**", "/images/**").permitAll()
+                // Rutas públicas de API: Registro, login y datos de inicio
+                .requestMatchers("/api/auth/**", "/api/inicio/**").permitAll()
+                // Cualquier otra solicitud requiere autenticación
+                .anyRequest().authenticated()
             );
+
         return http.build();
     }
 
+    // Bean para cifrado irreversible de contraseñas con BCrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

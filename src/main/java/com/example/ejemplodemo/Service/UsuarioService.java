@@ -17,18 +17,11 @@ public class UsuarioService {
     }
 
     public Usuario registrarUsuario(Usuario usuario) {
-
-        if (usuarioRepository.existsByDni(usuario.getDni())) {
-            throw new IllegalArgumentException("El DNI ya está registrado en el sistema.");
-        }
-
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El correo ya está registrado en el sistema.");
         }
-
         // Encriptación irreversible de contraseña antes de persistir
         usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
-
         return usuarioRepository.save(usuario);
     }
 }

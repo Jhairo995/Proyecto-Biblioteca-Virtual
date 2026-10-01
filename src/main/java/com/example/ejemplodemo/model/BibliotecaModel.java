@@ -1,4 +1,4 @@
-package com.example.ejemplodemo.Model;
+package com.example.ejemplodemo.model;
 
 public class BibliotecaModel {
 }

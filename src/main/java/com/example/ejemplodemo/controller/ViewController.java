@@ -16,11 +16,6 @@ public class ViewController {
         return "login";
     }
 
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin";
-    }
-
     @GetMapping("/catalogo")
     public String catalogo() {
         return "catalogo";

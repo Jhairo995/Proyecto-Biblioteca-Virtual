@@ -2,7 +2,8 @@ package com.example.ejemplodemo.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.jspecify.annotations.Nullable;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "usuarios")
@@ -21,12 +22,15 @@ public class Usuario {
     @Column(nullable = false)
     private String contrasena; 
 
+    // Se guardan como VARCHAR para poder agregar valores al enum sin alterar la columna
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Rol rol = Rol.USUARIO;
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(nullable = false, length = 20)
+    private Rol rol = Rol.LECTOR;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Column(nullable = false, length = 20)
     private NivelCuenta nivelCuenta = NivelCuenta.GRATUITO;
 
     @Column(unique = true, nullable = false, length = 8)

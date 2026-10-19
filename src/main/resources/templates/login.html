@@ -15,6 +15,9 @@
         <p class="text-muted small">Ingresa tus credenciales para continuar</p>
     </div>
 
+    <div th:if="${param.error}" class="alert alert-danger small py-2">Correo o contraseña incorrectos.</div>
+    <div th:if="${param.logout}" class="alert alert-success small py-2">Sesión cerrada correctamente.</div>
+
     <!-- Pestañas Login / Registro -->
     <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1" id="authTabs" role="tablist">
         <li class="nav-item">
@@ -28,16 +31,17 @@
     <div class="tab-content">
         <!-- Formulario Iniciar Sesión -->
         <div class="tab-pane fade show active" id="login-panel">
-            <form id="formLogin">
+            <!-- Procesado por Spring Security (SecurityConfig.formLogin) -->
+            <form id="formLogin" method="post" th:action="@{/login}">
                 <div class="mb-3">
                     <label class="form-label small fw-semibold" for="loginCorreo">Correo electrónico</label>
-                    <input type="email" class="form-control" id="loginCorreo" required>
+                    <input type="email" class="form-control" id="loginCorreo" name="correo" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-semibold" for="loginPass">Contraseña</label>
-                    <input type="password" class="form-control" id="loginPass" required>
+                    <input type="password" class="form-control" id="loginPass" name="contrasena" required>
                 </div>
-                <button type="button" onclick="iniciarSesion()" class="btn btn-primary w-100 mt-2">
+                <button type="submit" class="btn btn-primary w-100 mt-2">
                     <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
                 </button>
             </form>
@@ -62,6 +66,15 @@
                 <div class="mb-3">
                     <label class="form-label small fw-semibold" for="regPass">Contraseña</label>
                     <input type="password" class="form-control" id="regPass" minlength="6" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold d-block">Quiero...</label>
+                    <div class="btn-group w-100" role="group" aria-label="Tipo de cuenta">
+                        <input type="radio" class="btn-check" name="regRol" id="rolLector" value="LECTOR" checked>
+                        <label class="btn btn-outline-primary" for="rolLector"><i class="bi bi-book"></i> Leer libros</label>
+                        <input type="radio" class="btn-check" name="regRol" id="rolEscritor" value="ESCRITOR">
+                        <label class="btn btn-outline-primary" for="rolEscritor"><i class="bi bi-pen"></i> Publicar libros</label>
+                    </div>
                 </div>
                 <button type="button" onclick="registrarUsuario()" class="btn btn-primary w-100 mt-2">
                     <i class="bi bi-person-plus"></i> Crear cuenta
@@ -90,12 +103,13 @@
         const dni = document.getElementById('regDni').value.trim();
         const correo = document.getElementById('regCorreo').value.trim();
         const contrasena = document.getElementById('regPass').value;
+        const rol = document.querySelector('input[name="regRol"]:checked').value;
 
         try {
             const res = await fetch('/api/auth/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre, dni, correo, contrasena })
+                body: JSON.stringify({ nombre, dni, correo, contrasena, rol })
             });
             const data = await res.json();
             if (res.ok) {
@@ -107,11 +121,6 @@
         } catch (e) {
             mostrarAlerta('Error de conexión con el servidor.', 'danger');
         }
-    }
-
-    function iniciarSesion() {
-        // Redirección directa al panel administrativo para probar flujo visual
-        window.location.href = '/admin';
     }
 </script>
 </body>

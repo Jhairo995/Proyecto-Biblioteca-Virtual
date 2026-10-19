@@ -8,9 +8,11 @@
         <a class="navbar-brand" th:href="@{/}">
             <i class="bi bi-shield-lock-fill"></i> Panel Administrativo
         </a>
-        <a th:href="@{/}" class="btn btn-outline-light btn-sm">
-            <i class="bi bi-box-arrow-left"></i> Salir al inicio
-        </a>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+            </button>
+        </form>
     </div>
 </nav>
 
@@ -18,7 +20,7 @@
     <span class="blob blob-1"></span>
     <span class="blob blob-2"></span>
     <div class="container">
-        <h1 class="fw-bold h2 mb-1">Hola, <span class="text-gradient">administrador</span></h1>
+        <h1 class="fw-bold h2 mb-1">Hola, <span class="text-gradient" th:text="${usuarioActual.nombre}">administrador</span></h1>
         <p class="mb-0">Gestiona el catálogo y revisa la actividad de la biblioteca.</p>
     </div>
 </section>

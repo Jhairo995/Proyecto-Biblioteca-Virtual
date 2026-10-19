@@ -42,13 +42,34 @@
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${activo == 'suscripcion'} ? 'active'" th:href="@{/suscripcion}">Planes</a>
                 </li>
-                <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-                    <a th:href="@{/login}" class="btn btn-outline-light">Iniciar sesión</a>
-                </li>
-                <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
-                    <a th:href="@{/suscripcion}" class="btn btn-primary">
-                        <i class="bi bi-stars"></i> Hazte Premium
+                <th:block th:if="${usuarioActual == null}">
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a th:href="@{/login}" class="btn btn-outline-light">Iniciar sesión</a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a th:href="@{/suscripcion}" class="btn btn-primary">
+                            <i class="bi bi-stars"></i> Hazte Premium
+                        </a>
+                    </li>
+                </th:block>
+                <li th:if="${usuarioActual != null}" class="nav-item dropdown ms-lg-3 mt-2 mt-lg-0">
+                    <a class="btn btn-outline-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i>
+                        <span th:text="${usuarioActual.nombre}">Usuario</span>
                     </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <span class="dropdown-item-text small text-muted"
+                                  th:text="${usuarioActual.rol.name() + ' · ' + usuarioActual.nivelCuenta.name()}">LECTOR · GRATUITO</span>
+                        </li>
+                        <li><a class="dropdown-item" th:href="@{${usuarioActual.rol.panel}}"><i class="bi bi-speedometer2"></i> Mi panel</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+                            </form>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>

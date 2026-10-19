@@ -97,6 +97,29 @@
     </div>
 </div>
 
+<!-- Tarjeta de un libro publicado (datos de la BD) -->
+<div th:fragment="libroPublicado(libro)" class="col-12 col-sm-6 col-lg-3">
+    <div class="card book-card h-100 reveal">
+        <div class="book-cover" th:classappend="${libro.portada}" th:text="${libro.titulo}">Título</div>
+        <div class="card-body d-flex flex-column">
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge badge-soft" th:text="${libro.categoria}">Categoría</span>
+                <span th:if="${libro.nivelAcceso.name() == 'PREMIUM'}" class="badge rounded-pill text-bg-warning">
+                    <i class="bi bi-stars"></i> Premium
+                </span>
+            </div>
+            <h5 class="card-title mt-2" th:text="${libro.titulo}">Título</h5>
+            <p class="text-muted small mb-1" th:text="${libro.descripcion}">Descripción</p>
+            <small class="text-muted flex-grow-1" th:if="${libro.escritor != null}">
+                <i class="bi bi-pen"></i> <span th:text="${libro.escritor.nombre}">Escritor</span>
+            </small>
+            <a th:href="@{/lector/libros/{id}/leer(id=${libro.id})}" class="btn btn-sm btn-primary mt-3">
+                <i class="bi bi-book"></i> Leer
+            </a>
+        </div>
+    </div>
+</div>
+
 <!-- Grilla de categorías -->
 <div th:fragment="categorias" class="row g-4">
     <div class="col-12 col-sm-6 col-lg-3">
@@ -176,7 +199,14 @@
                     <li class="mb-3"><i class="bi bi-check-circle-fill text-success"></i> Descargas offline</li>
                     <li class="mb-3"><i class="bi bi-check-circle-fill text-success"></i> Cursos y tutoriales</li>
                 </ul>
-                <a th:href="@{/login}" class="btn btn-primary w-100">Suscribirme ahora</a>
+                <!-- Lector gratuito en sesión: activa Premium (pago simulado) -->
+                <form th:if="${usuarioActual != null and usuarioActual.rol.name() == 'LECTOR' and usuarioActual.nivelCuenta.name() == 'GRATUITO'}"
+                      th:action="@{/lector/premium}" method="post">
+                    <button type="submit" class="btn btn-primary w-100">Suscribirme ahora</button>
+                </form>
+                <span th:if="${usuarioActual != null and usuarioActual.nivelCuenta.name() == 'PREMIUM'}"
+                      class="btn btn-primary w-100 disabled"><i class="bi bi-check2-circle"></i> Ya eres Premium</span>
+                <a th:if="${usuarioActual == null}" th:href="@{/login}" class="btn btn-primary w-100">Suscribirme ahora</a>
             </div>
         </div>
     </div>

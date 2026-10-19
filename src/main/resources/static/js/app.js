@@ -28,10 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ==========================================
-    // BOTONES "LEER"
+    // BOTONES "LEER" (solo tarjetas de muestra sin enlace real)
     // ==========================================
 
-    document.querySelectorAll(".book-card .btn-primary").forEach(boton => {
+    document.querySelectorAll('.book-card a.btn-primary[href="#"]').forEach(boton => {
         boton.addEventListener("click", (event) => {
             event.preventDefault();
 

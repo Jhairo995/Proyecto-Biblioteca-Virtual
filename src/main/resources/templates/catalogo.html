@@ -17,7 +17,18 @@
 
 <section id="libros" class="py-5">
     <div class="container py-4">
-        <div class="row g-4">
+        <!-- Libros publicados por los escritores y aprobados por el administrador -->
+        <div th:unless="${#lists.isEmpty(libros)}" class="row g-4">
+            <th:block th:each="libro : ${libros}">
+                <div th:replace="~{fragments/layout :: libroPublicado(${libro})}"></div>
+            </th:block>
+        </div>
+
+        <!-- Muestras mientras no haya libros publicados -->
+        <p th:if="${#lists.isEmpty(libros)}" class="text-muted text-center mb-4">
+            Aún no hay libros publicados por nuestros escritores. Mientras tanto, mira algunas muestras:
+        </p>
+        <div th:if="${#lists.isEmpty(libros)}" class="row g-4">
             <div th:replace="~{fragments/layout :: libro('JavaScript Moderno', 'JavaScript', 'Aprende JavaScript desde cero hasta conceptos avanzados.', 'cover-blue', '4.9')}"></div>
             <div th:replace="~{fragments/layout :: libro('Python desde cero', 'Python', 'Aprende los fundamentos de Python mediante ejemplos prácticos.', 'cover-green', '4.8')}"></div>
             <div th:replace="~{fragments/layout :: libro('SQL Profesional', 'Bases de datos', 'Consultas, relaciones, índices y optimización.', 'cover-dark', '4.7')}"></div>

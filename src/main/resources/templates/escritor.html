@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Panel del Escritor')}"></head>
+
+<body>
+<nav th:replace="~{fragments/layout :: navbar('panel')}"></nav>
+
+<section class="page-hero">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <div class="container">
+        <span class="hero-badge mb-3"><i class="bi bi-pen"></i> Panel del escritor</span>
+        <h1 class="fw-bold h2 mb-1">Hola, <span class="text-gradient" th:text="${usuarioActual.nombre}">escritor</span></h1>
+        <p class="mb-0">Publica tus libros: cada envío pasa por la revisión de un administrador antes de aparecer en el catálogo.</p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="row g-4">
+        <!-- Formulario de publicación -->
+        <div class="col-lg-5">
+            <div class="card panel-card p-4">
+                <h4 class="fw-bold mb-3"><i class="bi bi-cloud-upload text-primary"></i> Publicar nuevo libro</h4>
+
+                <form th:action="@{/escritor/libros}" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" for="titulo">Título del libro</label>
+                        <input type="text" class="form-control" id="titulo" name="titulo" maxlength="255" required placeholder="Ej: Clean Code">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" for="descripcion">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" maxlength="1000"
+                                  placeholder="¿De qué trata tu libro?"></textarea>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-semibold" for="categoria">Categoría</label>
+                            <select class="form-select" id="categoria" name="categoria" required>
+                                <option>Desarrollo Web</option>
+                                <option>Java</option>
+                                <option>Bases de Datos</option>
+                                <option>IA y Machine Learning</option>
+                                <option>Otros</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label small fw-semibold" for="idioma">Idioma</label>
+                            <input type="text" class="form-control" id="idioma" name="idioma" value="Español" maxlength="50">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold d-block">Acceso</label>
+                        <div class="btn-group w-100" role="group" aria-label="Nivel de acceso">
+                            <input type="radio" class="btn-check" name="nivelAcceso" id="accesoGratuito" value="GRATUITO" checked>
+                            <label class="btn btn-outline-primary" for="accesoGratuito"><i class="bi bi-unlock"></i> Gratuito</label>
+                            <input type="radio" class="btn-check" name="nivelAcceso" id="accesoPremium" value="PREMIUM">
+                            <label class="btn btn-outline-primary" for="accesoPremium"><i class="bi bi-stars"></i> Premium</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" for="archivo">Archivo del libro (PDF, máx. 20 MB)</label>
+                        <input type="file" class="form-control" id="archivo" name="archivo" accept="application/pdf,.pdf" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-2">
+                        <i class="bi bi-send"></i> Enviar a revisión
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Libros del escritor -->
+        <div class="col-lg-7">
+            <div class="row g-3 mb-4">
+                <div class="col-4">
+                    <div class="card panel-card p-3 text-center">
+                        <h6 class="text-muted mb-1">Enviados</h6>
+                        <h2 class="fw-bold mb-0" th:text="${#lists.size(libros)}">0</h2>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card panel-card p-3 text-center">
+                        <h6 class="text-muted mb-1">Publicados</h6>
+                        <h2 class="fw-bold mb-0 text-success" th:text="${#lists.size(libros.?[estado.name() == 'APROBADO'])}">0</h2>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card panel-card p-3 text-center">
+                        <h6 class="text-muted mb-1">En revisión</h6>
+                        <h2 class="fw-bold mb-0 text-warning" th:text="${#lists.size(libros.?[estado.name() == 'PENDIENTE'])}">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card panel-card p-4">
+                <h5 class="fw-bold mb-3">Mis libros</h5>
+                <p th:if="${#lists.isEmpty(libros)}" class="text-muted mb-0">
+                    Aún no has publicado libros. ¡Sube el primero desde el formulario!
+                </p>
+                <div th:unless="${#lists.isEmpty(libros)}" class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                            <tr class="table-light">
+                                <th>Título</th>
+                                <th>Acceso</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="libro : ${libros}">
+                                <td>
+                                    <div class="fw-semibold" th:text="${libro.titulo}">Título</div>
+                                    <small class="text-muted" th:text="${libro.categoria + ' · ' + #temporals.format(libro.fechaRegistro, 'dd/MM/yyyy')}">Categoría</small>
+                                </td>
+                                <td><span class="badge badge-soft" th:text="${libro.nivelAcceso}">GRATUITO</span></td>
+                                <td>
+                                    <span th:switch="${libro.estado.name()}">
+                                        <span th:case="'APROBADO'" class="badge rounded-pill text-bg-success">Publicado</span>
+                                        <span th:case="'RECHAZADO'" class="badge rounded-pill text-bg-danger">Rechazado</span>
+                                        <span th:case="*" class="badge rounded-pill text-bg-warning">En revisión</span>
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/escritor/libros/{id}/archivo(id=${libro.id})}" target="_blank"
+                                       class="btn btn-sm btn-outline-primary" aria-label="Ver PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,161 +1,501 @@
+/* ==========================================================================
+   CodeLibrary - Hoja de estilos principal
+   Paleta: navy #0d1b2a · azul #0d6efd · violeta #6610f2 · cian #0dcaf0
+   ========================================================================== */
+
+:root {
+    --cl-navy: #0d1b2a;
+    --cl-navy-2: #14273d;
+    --cl-blue: #0d6efd;
+    --cl-violet: #6610f2;
+    --cl-cyan: #0dcaf0;
+    --cl-surface: #f4f7fc;
+    --cl-text-muted: #6c7a90;
+    --cl-gradient: linear-gradient(135deg, var(--cl-blue), var(--cl-violet));
+    --cl-gradient-cyan: linear-gradient(135deg, var(--cl-cyan), var(--cl-blue));
+    --cl-radius: 1.25rem;
+    --cl-shadow: 0 10px 30px rgba(13, 27, 42, 0.08);
+    --cl-shadow-hover: 0 22px 45px rgba(13, 110, 253, 0.18);
+    --cl-glow: 0 8px 24px rgba(102, 16, 242, 0.35);
+}
+
 body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-        }
+    font-family: "Inter", system-ui, sans-serif;
+    background-color: var(--cl-surface);
+    color: var(--cl-navy);
+}
 
-        /* NAVBAR */
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.4rem;
-        }
+h1, h2, h3, h4, h5, .navbar-brand, .price {
+    font-family: "Poppins", "Inter", sans-serif;
+}
 
-        .navbar-brand i {
-            color: #0d6efd;
-        }
+::selection {
+    background: var(--cl-violet);
+    color: #fff;
+}
 
-        /* HERO */
-        .hero {
-            background: linear-gradient(135deg, #0d1b2a, #0d6efd);
-            color: white;
-            padding: 100px 0;
-        }
+.text-gradient {
+    background: var(--cl-gradient-cyan);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
 
-        .hero h1 {
-            font-size: clamp(2.2rem, 5vw, 4rem);
-            font-weight: 700;
-        }
+/* ---------- BOTONES ---------- */
+.btn {
+    border-radius: 999px;
+    font-weight: 600;
+    padding-inline: 1.4rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease;
+}
 
-        .hero p {
-            font-size: 1.15rem;
-            color: #e9ecef;
-        }
+.btn-sm {
+    padding-inline: 1rem;
+}
 
-        .hero-card {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-        }
+.btn-primary {
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-border-color: transparent;
+    background-image: linear-gradient(135deg, var(--cl-blue), var(--cl-violet), var(--cl-blue));
+    background-size: 200% 100%;
+    border: none;
+}
 
-        /* SECCIONES */
-        .section-title {
-            font-weight: 700;
-        }
+.btn-primary:hover,
+.btn-primary:focus-visible {
+    background-position: 100% 0;
+    box-shadow: var(--cl-glow);
+    transform: translateY(-2px);
+}
 
-        .section-subtitle {
-            color: #6c757d;
-        }
+.btn-outline-primary:hover,
+.btn-outline-light:hover,
+.btn-light:hover {
+    transform: translateY(-2px);
+}
 
-        /* CATEGORÍAS */
-        .category-card {
-            border: none;
-            border-radius: 15px;
-            transition: 0.3s;
-        }
+.btn-light {
+    color: var(--cl-violet);
+}
 
-        .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
+/* ---------- NAVBAR ---------- */
+.navbar-glass {
+    background-color: rgba(13, 27, 42, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: box-shadow 0.3s ease, padding 0.3s ease;
+}
 
-        .category-icon {
-            font-size: 2.5rem;
-            color: #0d6efd;
-        }
+.navbar-glass.scrolled {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
 
-        /* LIBROS */
-        .book-card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: 0.3s;
-        }
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+}
 
-        .book-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-        }
+.navbar-brand i {
+    color: var(--cl-cyan);
+}
 
-        .book-cover {
-            height: 220px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.3rem;
-            font-weight: bold;
-            text-align: center;
-            padding: 20px;
-        }
+.navbar-dark .nav-link {
+    font-weight: 500;
+    position: relative;
+}
 
-        .cover-blue {
-            background: linear-gradient(135deg, #0d6efd, #6610f2);
-        }
+.navbar-dark .nav-link.active::after,
+.navbar-dark .nav-link:hover::after {
+    content: "";
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.15rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--cl-gradient-cyan);
+}
 
-        .cover-green {
-            background: linear-gradient(135deg, #198754, #20c997);
-        }
+/* ---------- HERO ---------- */
+.hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--cl-navy);
+    color: #fff;
+    padding: 110px 0 120px;
+    isolation: isolate;
+}
 
-        .cover-dark {
-            background: linear-gradient(135deg, #212529, #495057);
-        }
+.hero h1 {
+    font-size: clamp(2.3rem, 5vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
 
-        .cover-orange {
-            background: linear-gradient(135deg, #fd7e14, #dc3545);
-        }
+.hero p {
+    font-size: 1.15rem;
+    color: #c9d4e5;
+}
 
-        /* BENEFICIOS */
-        .benefit-icon {
-            width: 60px;
-            height: 60px;
-            background-color: #e7f1ff;
-            color: #0d6efd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    background: rgba(13, 202, 240, 0.12);
+    border: 1px solid rgba(13, 202, 240, 0.35);
+    color: var(--cl-cyan);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
 
-        /* PLANES */
-        .pricing-card {
-            border: none;
-            border-radius: 20px;
-            transition: 0.3s;
-        }
+/* Manchas de luz animadas detrás del hero */
+.blob {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    animation: flotar 12s ease-in-out infinite alternate;
+}
 
-        .pricing-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-        }
+.blob-1 { width: 420px; height: 420px; background: var(--cl-blue); top: -120px; left: -80px; }
+.blob-2 { width: 380px; height: 380px; background: var(--cl-violet); bottom: -140px; right: 10%; animation-delay: -4s; }
+.blob-3 { width: 260px; height: 260px; background: var(--cl-cyan); top: 20%; right: -60px; opacity: 0.35; animation-delay: -8s; }
 
-        .pricing-featured {
-            border: 2px solid #0d6efd;
-        }
+@keyframes flotar {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(40px, 30px) scale(1.12); }
+}
 
-        .price {
-            font-size: 2.5rem;
-            font-weight: bold;
-        }
+.hero-card {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 28px;
+    padding: 36px 30px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+    animation: levitar 6s ease-in-out infinite;
+}
 
-        /* TESTIMONIOS */
-        .testimonial {
-            border: none;
-            border-radius: 15px;
-        }
+.hero-card .display-1 {
+    background: var(--cl-gradient-cyan);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
 
-        /* FOOTER */
-        footer {
-            background-color: #0d1b2a;
-            color: #adb5bd;
-        }
+.hero-card h4 {
+    font-weight: 800;
+    margin-bottom: 0;
+}
 
-        footer a {
-            color: #adb5bd;
-            text-decoration: none;
-        }
+@keyframes levitar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
 
-        footer a:hover {
-            color: white;
-        }
+/* Cabecera compacta para páginas internas */
+.page-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--cl-navy);
+    color: #fff;
+    padding: 70px 0 60px;
+    isolation: isolate;
+}
+
+.page-hero p {
+    color: #c9d4e5;
+}
+
+/* ---------- SECCIONES ---------- */
+.section-eyebrow {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cl-violet);
+    margin-bottom: 0.5rem;
+}
+
+.section-title {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+    color: var(--cl-text-muted);
+}
+
+.section-alt {
+    background-color: #fff;
+}
+
+/* ---------- TARJETAS BASE ---------- */
+.category-card,
+.book-card,
+.pricing-card,
+.panel-card {
+    border: 1px solid rgba(13, 27, 42, 0.06);
+    border-radius: var(--cl-radius);
+    box-shadow: var(--cl-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff;
+}
+
+.category-card:hover,
+.book-card:hover,
+.pricing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--cl-shadow-hover);
+}
+
+/* ---------- CATEGORÍAS ---------- */
+.category-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 22px;
+    font-size: 2rem;
+    color: #fff;
+    background: var(--cl-gradient);
+    box-shadow: var(--cl-glow);
+    transition: transform 0.3s ease;
+}
+
+.category-card:hover .category-icon {
+    transform: rotate(-8deg) scale(1.08);
+}
+
+/* ---------- LIBROS ---------- */
+.book-card {
+    overflow: hidden;
+}
+
+.book-cover {
+    position: relative;
+    height: 230px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 24px 24px 24px 40px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Lomo del libro */
+.book-cover::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 18px;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.1));
+}
+
+/* Brillo al pasar el cursor */
+.book-cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.25) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.7s ease;
+}
+
+.book-card:hover .book-cover::after {
+    transform: translateX(100%);
+}
+
+.cover-blue { background: linear-gradient(135deg, #0d6efd, #6610f2); }
+.cover-green { background: linear-gradient(135deg, #198754, #20c997); }
+.cover-dark { background: linear-gradient(135deg, #0d1b2a, #495057); }
+.cover-orange { background: linear-gradient(135deg, #fd7e14, #dc3545); }
+.cover-cyan { background: linear-gradient(135deg, #0dcaf0, #0d6efd); }
+.cover-pink { background: linear-gradient(135deg, #d63384, #6610f2); }
+
+.badge-soft {
+    background-color: rgba(102, 16, 242, 0.1);
+    color: var(--cl-violet);
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 0.4em 0.85em;
+}
+
+/* ---------- BENEFICIOS ---------- */
+.benefit-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(13, 110, 253, 0.1);
+    color: var(--cl-blue);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+}
+
+/* ---------- PLANES ---------- */
+.pricing-card {
+    position: relative;
+}
+
+.pricing-featured {
+    border: 2px solid transparent;
+    background:
+        linear-gradient(#fff, #fff) padding-box,
+        var(--cl-gradient) border-box;
+    box-shadow: var(--cl-shadow-hover);
+}
+
+@media (min-width: 992px) {
+    .pricing-featured {
+        transform: scale(1.04);
+    }
+
+    .pricing-featured:hover {
+        transform: scale(1.04) translateY(-8px);
+    }
+}
+
+.price {
+    font-size: 2.6rem;
+    font-weight: 800;
+}
+
+.pricing-featured .price {
+    background: var(--cl-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* ---------- CTA ---------- */
+.cta-band {
+    position: relative;
+    overflow: hidden;
+    background: var(--cl-gradient);
+    color: #fff;
+    isolation: isolate;
+}
+
+.cta-band .blob {
+    opacity: 0.4;
+}
+
+/* ---------- AUTENTICACIÓN ---------- */
+.auth-page {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    background: var(--cl-navy);
+    isolation: isolate;
+}
+
+.auth-card {
+    max-width: 440px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 28px;
+    background-color: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+}
+
+.auth-card .nav-pills .nav-link {
+    border-radius: 999px;
+    font-weight: 600;
+    color: var(--cl-text-muted);
+}
+
+.auth-card .nav-pills .nav-link.active {
+    background: var(--cl-gradient);
+    color: #fff;
+}
+
+.form-control,
+.form-select {
+    border-radius: 0.8rem;
+    padding: 0.65rem 0.9rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--cl-violet);
+    box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.15);
+}
+
+/* ---------- PANEL ADMIN ---------- */
+.stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #fff;
+    background: var(--cl-gradient);
+}
+
+.stat-icon.cyan {
+    background: var(--cl-gradient-cyan);
+}
+
+/* ---------- FOOTER ---------- */
+footer {
+    background-color: var(--cl-navy);
+    color: #9fb0c8;
+}
+
+footer a {
+    color: #9fb0c8;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+footer a:hover {
+    color: var(--cl-cyan);
+}
+
+footer hr {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- ANIMACIÓN DE ENTRADA (usada por app.js) ---------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}

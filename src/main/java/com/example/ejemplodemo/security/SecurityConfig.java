@@ -22,6 +22,8 @@ public class SecurityConfig {
         http
             // Desactivado temporalmente para permitir peticiones POST desde formularios y APIs sin tokens CSRF
             .csrf(csrf -> csrf.disable())
+            // Permite incrustar el PDF del libro en un iframe del mismo sitio (visor del lector)
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .authorizeHttpRequests(auth -> auth
                 // Rutas públicas: Vistas web principales y archivos estáticos (CSS, JS, imágenes)
                 .requestMatchers("/", "/login", "/catalogo", "/categorias", "/suscripcion", "/error").permitAll()

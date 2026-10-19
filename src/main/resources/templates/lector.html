@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mi biblioteca')}"></head>
+
+<body>
+<nav th:replace="~{fragments/layout :: navbar('panel')}"></nav>
+
+<section class="page-hero">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <span class="hero-badge mb-3"><i class="bi bi-book"></i> Panel del lector</span>
+            <h1 class="fw-bold h2 mb-1">Hola, <span class="text-gradient" th:text="${usuarioActual.nombre}">lector</span></h1>
+            <p class="mb-0">
+                Plan actual:
+                <strong th:text="${usuarioActual.nivelCuenta.name() == 'PREMIUM' ? 'Premium' : 'Gratuito'}">Gratuito</strong>
+            </p>
+        </div>
+        <a th:if="${usuarioActual.nivelCuenta.name() == 'GRATUITO'}" th:href="@{/suscripcion}" class="btn btn-light btn-lg">
+            <i class="bi bi-stars"></i> Hazte Premium
+        </a>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+
+    <!-- Mi lista de lectura -->
+    <div class="mb-5">
+        <span class="section-eyebrow">Mi lista</span>
+        <h2 class="section-title h3 mb-4">Libros que escogí para leer</h2>
+        <p th:if="${#lists.isEmpty(miLista)}" class="text-muted">
+            Tu lista está vacía. Agrega libros desde el catálogo de abajo.
+        </p>
+        <div class="row g-4">
+            <div th:each="lectura : ${miLista}" th:with="libro=${lectura.libro}" class="col-12 col-sm-6 col-lg-3">
+                <div class="card book-card h-100">
+                    <div class="book-cover" th:classappend="${libro.portada}" th:text="${libro.titulo}">Título</div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge badge-soft" th:text="${libro.categoria}">Categoría</span>
+                            <span th:if="${libro.nivelAcceso.name() == 'PREMIUM'}" class="badge rounded-pill text-bg-warning"><i class="bi bi-stars"></i> Premium</span>
+                        </div>
+                        <h5 class="card-title mt-2 flex-grow-1" th:text="${libro.titulo}">Título</h5>
+                        <div class="d-flex gap-2 mt-2">
+                            <a th:href="@{/lector/libros/{id}/leer(id=${libro.id})}" class="btn btn-sm btn-primary flex-grow-1">
+                                <i class="bi bi-book"></i> Leer
+                            </a>
+                            <form th:action="@{/lector/lista/{id}/quitar(id=${libro.id})}" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Quitar de mi lista"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Catálogo disponible -->
+    <div>
+        <span class="section-eyebrow">Catálogo</span>
+        <h2 class="section-title h3 mb-4">Escoge tu próxima lectura</h2>
+        <p th:if="${#lists.isEmpty(catalogo)}" class="text-muted">
+            Todavía no hay libros publicados. ¡Vuelve pronto!
+        </p>
+        <div class="row g-4">
+            <div th:each="libro : ${catalogo}"
+                 th:with="bloqueado=${libro.nivelAcceso.name() == 'PREMIUM' and usuarioActual.nivelCuenta.name() == 'GRATUITO'},
+                          enLista=${idsEnLista.contains(libro.id)}"
+                 class="col-12 col-sm-6 col-lg-3">
+                <div class="card book-card h-100">
+                    <div class="book-cover" th:classappend="${libro.portada}" th:text="${libro.titulo}">Título</div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge badge-soft" th:text="${libro.categoria}">Categoría</span>
+                            <span th:if="${libro.nivelAcceso.name() == 'PREMIUM'}" class="badge rounded-pill text-bg-warning"><i class="bi bi-stars"></i> Premium</span>
+                        </div>
+                        <h5 class="card-title mt-2" th:text="${libro.titulo}">Título</h5>
+                        <p class="text-muted small flex-grow-1" th:text="${libro.descripcion}">Descripción</p>
+                        <small class="text-muted mb-3" th:if="${libro.escritor != null}">
+                            <i class="bi bi-pen"></i> <span th:text="${libro.escritor.nombre}">Escritor</span>
+                        </small>
+
+                        <a th:if="${bloqueado}" th:href="@{/suscripcion}" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-lock"></i> Solo Premium
+                        </a>
+                        <span th:if="${!bloqueado and enLista}" class="btn btn-sm btn-outline-success disabled">
+                            <i class="bi bi-check2"></i> En tu lista
+                        </span>
+                        <form th:if="${!bloqueado and !enLista}" th:action="@{/lector/lista/{id}(id=${libro.id})}" method="post">
+                            <button type="submit" class="btn btn-sm btn-primary w-100"><i class="bi bi-plus-lg"></i> Agregar a mi lista</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

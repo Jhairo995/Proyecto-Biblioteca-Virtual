@@ -49,4 +49,15 @@ public class Libro {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaRegistro = LocalDateTime.now();
+
+    // Clase CSS de la portada según la categoría (no se persiste: la entidad usa acceso por campo)
+    public String getPortada() {
+        return switch (categoria == null ? "" : categoria) {
+            case "Desarrollo Web" -> "cover-blue";
+            case "Java" -> "cover-orange";
+            case "Bases de Datos" -> "cover-dark";
+            case "IA y Machine Learning" -> "cover-pink";
+            default -> "cover-cyan";
+        };
+    }
 }

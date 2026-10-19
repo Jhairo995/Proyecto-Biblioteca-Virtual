@@ -17,7 +17,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Rutas públicas: Vistas web principales y archivos estáticos (CSS, JS, imágenes)
-                .requestMatchers("/", "/login", "/admin", "/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/", "/login", "/admin", "/catalogo", "/categorias", "/suscripcion", "/error").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 // Rutas públicas de API: Registro, login y datos de inicio
                 .requestMatchers("/api/auth/**", "/api/inicio/**").permitAll()
                 // Cualquier otra solicitud requiere autenticación

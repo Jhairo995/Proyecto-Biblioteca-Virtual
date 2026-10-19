@@ -20,4 +20,19 @@ public class ViewController {
     public String admin() {
         return "admin";
     }
+
+    @GetMapping("/catalogo")
+    public String catalogo() {
+        return "catalogo";
+    }
+
+    @GetMapping("/categorias")
+    public String categorias() {
+        return "categorias";
+    }
+
+    @GetMapping("/suscripcion")
+    public String suscripcion() {
+        return "suscripcion";
+    }
 }

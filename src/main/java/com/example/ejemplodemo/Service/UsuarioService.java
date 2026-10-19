@@ -1,5 +1,7 @@
 package com.example.ejemplodemo.Service;
 
+import com.example.ejemplodemo.model.NivelCuenta;
+import com.example.ejemplodemo.model.Rol;
 import com.example.ejemplodemo.model.Usuario;
 import com.example.ejemplodemo.Repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,12 @@ public class UsuarioService {
         if (usuarioRepository.existsByCorreo(usuario.getCorreo())) {
             throw new IllegalArgumentException("El correo ya está registrado en el sistema.");
         }
+
+        // Solo se permite elegir LECTOR o ESCRITOR; los administradores no se registran públicamente
+        usuario.setId(null);
+        usuario.setRol(usuario.getRol() == Rol.ESCRITOR ? Rol.ESCRITOR : Rol.LECTOR);
+        // Toda cuenta nueva inicia en el plan gratuito
+        usuario.setNivelCuenta(NivelCuenta.GRATUITO);
 
         // Encriptación irreversible de contraseña antes de persistir
         usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));

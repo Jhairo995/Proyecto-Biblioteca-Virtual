@@ -27,15 +27,11 @@ public class AuthController {
                     "id", nuevoUsuario.getId(),
                     "nombre", nuevoUsuario.getNombre(),
                     "correo", nuevoUsuario.getCorreo(),
+                    "rol", nuevoUsuario.getRol().name(),
                     "nivelCuenta", nuevoUsuario.getNivelCuenta().name()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                     "error", e.getMessage()));
         }
-    }
-
-    @PostMapping("/login")
-    public Map<String, String> iniciarSesion() {
-        return Map.of("mensaje", "Endpoint listo para validar credenciales temporales.");
     }
 }

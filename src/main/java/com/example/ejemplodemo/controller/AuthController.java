@@ -2,6 +2,7 @@ package com.example.ejemplodemo.controller;
 
 import com.example.ejemplodemo.model.Usuario;
 import com.example.ejemplodemo.Service.UsuarioService;
+import com.example.ejemplodemo.Service.UsuarioService.DatosRegistro;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +20,9 @@ public class AuthController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> registrarUsuario(@RequestBody DatosRegistro datos) {
         try {
-            Usuario nuevoUsuario = usuarioService.registrarUsuario(usuario);
+            Usuario nuevoUsuario = usuarioService.registrarUsuario(datos);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "mensaje", "Usuario registrado exitosamente",
                     "id", nuevoUsuario.getId(),

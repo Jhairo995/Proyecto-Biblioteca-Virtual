@@ -16,24 +16,27 @@
 </section>
 
 <div class="container py-5">
-    <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
-    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <th:block th:replace="~{fragments/layout :: mensajes}"></th:block>
 
     <div class="row g-4">
         <!-- Formulario de publicación -->
         <div class="col-lg-5">
-            <div class="card panel-card p-4">
+            <div class="card panel-card p-3 p-md-4">
                 <h4 class="fw-bold mb-3"><i class="bi bi-cloud-upload text-primary"></i> Publicar nuevo libro</h4>
 
-                <form th:action="@{/escritor/libros}" method="post" enctype="multipart/form-data">
+                <form class="needs-validation" th:action="@{/escritor/libros}" method="post" enctype="multipart/form-data" novalidate>
                     <div class="mb-3">
                         <label class="form-label small fw-semibold" for="titulo">Título del libro</label>
                         <input type="text" class="form-control" id="titulo" name="titulo" maxlength="255" required placeholder="Ej: Clean Code">
+                        <div class="invalid-feedback">Escribe el título del libro.</div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold" for="descripcion">Descripción</label>
+                        <div class="d-flex justify-content-between align-items-baseline">
+                            <label class="form-label small fw-semibold" for="descripcion">Descripción</label>
+                            <small class="text-muted" id="contadorDescripcion" aria-live="polite">0 / 1000</small>
+                        </div>
                         <textarea class="form-control" id="descripcion" name="descripcion" rows="3" maxlength="1000"
-                                  placeholder="¿De qué trata tu libro?"></textarea>
+                                  data-contador="contadorDescripcion" placeholder="¿De qué trata tu libro?"></textarea>
                     </div>
                     <div class="row g-3 mb-3">
                         <div class="col-sm-6">
@@ -52,19 +55,35 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold d-block">Acceso</label>
-                        <div class="btn-group w-100" role="group" aria-label="Nivel de acceso">
-                            <input type="radio" class="btn-check" name="nivelAcceso" id="accesoGratuito" value="GRATUITO" checked>
-                            <label class="btn btn-outline-primary" for="accesoGratuito"><i class="bi bi-unlock"></i> Gratuito</label>
-                            <input type="radio" class="btn-check" name="nivelAcceso" id="accesoPremium" value="PREMIUM">
-                            <label class="btn btn-outline-primary" for="accesoPremium"><i class="bi bi-stars"></i> Premium</label>
+                        <span class="form-label small fw-semibold d-block">¿Quién podrá leerlo?</span>
+                        <div class="row g-2" role="radiogroup" aria-label="Nivel de acceso">
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="nivelAcceso" id="accesoGratuito" value="GRATUITO" checked>
+                                <label class="opcion-tile" for="accesoGratuito">
+                                    <i class="bi bi-unlock" aria-hidden="true"></i>
+                                    <span><strong>Gratuito</strong><small>Todos los lectores</small></span>
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="nivelAcceso" id="accesoPremium" value="PREMIUM">
+                                <label class="opcion-tile" for="accesoPremium">
+                                    <i class="bi bi-stars" aria-hidden="true"></i>
+                                    <span><strong>Premium</strong><small>Solo suscriptores</small></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold" for="archivo">Archivo del libro (PDF, máx. 20 MB)</label>
-                        <input type="file" class="form-control" id="archivo" name="archivo" accept="application/pdf,.pdf" required>
+                        <label class="form-label small fw-semibold" for="archivo">Archivo del libro</label>
+                        <div class="zona-archivo">
+                            <i class="bi bi-file-earmark-arrow-up" aria-hidden="true"></i>
+                            <span class="zona-archivo-nombre">Arrastra tu PDF aquí o haz clic para elegirlo</span>
+                            <small class="zona-archivo-detalle text-muted">Solo PDF · máximo 20 MB</small>
+                            <input type="file" id="archivo" name="archivo" accept="application/pdf,.pdf" data-max-mb="20" required>
+                        </div>
+                        <div class="invalid-feedback">Selecciona el archivo PDF del libro.</div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100 mt-2">
+                    <button type="submit" class="btn btn-primary w-100 mt-2" data-cargando="Subiendo tu libro…">
                         <i class="bi bi-send"></i> Enviar a revisión
                     </button>
                 </form>
@@ -75,38 +94,38 @@
         <div class="col-lg-7">
             <div class="row g-3 mb-4">
                 <div class="col-4">
-                    <div class="card panel-card p-3 text-center">
-                        <h6 class="text-muted mb-1">Enviados</h6>
+                    <div class="card panel-card h-100 p-2 p-sm-3 text-center">
+                        <h6 class="text-muted small mb-1">Enviados</h6>
                         <h2 class="fw-bold mb-0" th:text="${#lists.size(libros)}">0</h2>
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="card panel-card p-3 text-center">
-                        <h6 class="text-muted mb-1">Publicados</h6>
+                    <div class="card panel-card h-100 p-2 p-sm-3 text-center">
+                        <h6 class="text-muted small mb-1">Publicados</h6>
                         <h2 class="fw-bold mb-0 text-success" th:text="${#lists.size(libros.?[estado.name() == 'APROBADO'])}">0</h2>
                     </div>
                 </div>
                 <div class="col-4">
-                    <div class="card panel-card p-3 text-center">
-                        <h6 class="text-muted mb-1">En revisión</h6>
+                    <div class="card panel-card h-100 p-2 p-sm-3 text-center">
+                        <h6 class="text-muted small mb-1">En revisión</h6>
                         <h2 class="fw-bold mb-0 text-warning" th:text="${#lists.size(libros.?[estado.name() == 'PENDIENTE'])}">0</h2>
                     </div>
                 </div>
             </div>
 
-            <div class="card panel-card p-4">
+            <div class="card panel-card p-3 p-md-4">
                 <h5 class="fw-bold mb-3">Mis libros</h5>
                 <p th:if="${#lists.isEmpty(libros)}" class="text-muted mb-0">
                     Aún no has publicado libros. ¡Sube el primero desde el formulario!
                 </p>
                 <div th:unless="${#lists.isEmpty(libros)}" class="table-responsive">
-                    <table class="table align-middle mb-0">
+                    <table class="table align-middle mb-0 tabla-apilada">
                         <thead>
                             <tr class="table-light">
                                 <th>Título</th>
                                 <th>Acceso</th>
                                 <th>Estado</th>
-                                <th></th>
+                                <th><span class="visually-hidden">Archivo</span></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -115,15 +134,15 @@
                                     <div class="fw-semibold" th:text="${libro.titulo}">Título</div>
                                     <small class="text-muted" th:text="${libro.categoria + ' · ' + #temporals.format(libro.fechaRegistro, 'dd/MM/yyyy')}">Categoría</small>
                                 </td>
-                                <td><span class="badge badge-soft" th:text="${libro.nivelAcceso}">GRATUITO</span></td>
-                                <td>
+                                <td data-label="Acceso"><span class="badge badge-soft" th:text="${libro.nivelAcceso}">GRATUITO</span></td>
+                                <td data-label="Estado">
                                     <span th:switch="${libro.estado.name()}">
                                         <span th:case="'APROBADO'" class="badge rounded-pill text-bg-success">Publicado</span>
                                         <span th:case="'RECHAZADO'" class="badge rounded-pill text-bg-danger">Rechazado</span>
                                         <span th:case="*" class="badge rounded-pill text-bg-warning">En revisión</span>
                                     </span>
                                 </td>
-                                <td class="text-end">
+                                <td class="text-end" data-label="Archivo">
                                     <a th:href="@{/escritor/libros/{id}/archivo(id=${libro.id})}" target="_blank"
                                        class="btn btn-sm btn-outline-primary" aria-label="Ver PDF"><i class="bi bi-file-earmark-pdf"></i></a>
                                 </td>

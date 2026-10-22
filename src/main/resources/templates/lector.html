@@ -24,7 +24,7 @@
 </section>
 
 <div class="container py-5">
-    <div th:if="${exito}" class="alert alert-success" th:text="${exito}"></div>
+    <th:block th:replace="~{fragments/layout :: mensajes}"></th:block>
 
     <!-- Mi lista de lectura -->
     <div class="mb-5">
@@ -47,7 +47,9 @@
                             <a th:href="@{/lector/libros/{id}/leer(id=${libro.id})}" class="btn btn-sm btn-primary flex-grow-1">
                                 <i class="bi bi-book"></i> Leer
                             </a>
-                            <form th:action="@{/lector/lista/{id}/quitar(id=${libro.id})}" method="post">
+                            <form th:action="@{/lector/lista/{id}/quitar(id=${libro.id})}" method="post"
+                                  th:data-confirmar="${'«' + libro.titulo + '» saldrá de tu lista de lectura.'}"
+                                  data-confirmar-boton="Sí, quitar">
                                 <button type="submit" class="btn btn-sm btn-outline-danger" aria-label="Quitar de mi lista"><i class="bi bi-trash"></i></button>
                             </form>
                         </div>

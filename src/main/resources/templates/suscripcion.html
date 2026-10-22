@@ -17,7 +17,7 @@
 
 <section id="planes" class="py-5">
     <div class="container py-5">
-        <div th:if="${error}" class="alert alert-warning text-center" th:text="${error}"></div>
+        <span th:if="${error}" hidden data-aviso="warning" th:text="${error}"></span>
         <div th:replace="~{fragments/layout :: planes}"></div>
     </div>
 </section>

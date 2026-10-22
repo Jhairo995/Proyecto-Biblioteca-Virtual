@@ -2,131 +2,230 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Acceso')}"></head>
 
-<body class="auth-page d-flex align-items-center justify-content-center p-3">
-<span class="blob blob-1"></span>
-<span class="blob blob-2"></span>
-<span class="blob blob-3"></span>
-
-<div class="card auth-card p-4 p-md-5">
-    <div class="text-center mb-4">
-        <a th:href="@{/}" class="text-decoration-none">
-            <h3 class="fw-bold text-dark"><i class="bi bi-code-slash text-primary"></i> CodeLibrary</h3>
-        </a>
-        <p class="text-muted small">Ingresa tus credenciales para continuar</p>
-    </div>
-
-    <div th:if="${param.error}" class="alert alert-danger small py-2">Correo o contraseña incorrectos.</div>
-    <div th:if="${param.logout}" class="alert alert-success small py-2">Sesión cerrada correctamente.</div>
-
-    <!-- Pestañas Login / Registro -->
-    <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1" id="authTabs" role="tablist">
-        <li class="nav-item">
-            <button class="nav-link active" id="login-tab" data-bs-toggle="pill" data-bs-target="#login-panel" type="button">Ingresar</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" id="register-tab" data-bs-toggle="pill" data-bs-target="#register-panel" type="button">Registrarse</button>
-        </li>
-    </ul>
-
-    <div class="tab-content">
-        <!-- Formulario Iniciar Sesión -->
-        <div class="tab-pane fade show active" id="login-panel">
-            <!-- Procesado por Spring Security (SecurityConfig.formLogin) -->
-            <form id="formLogin" method="post" th:action="@{/login}">
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold" for="loginCorreo">Correo electrónico</label>
-                    <input type="email" class="form-control" id="loginCorreo" name="correo" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold" for="loginPass">Contraseña</label>
-                    <input type="password" class="form-control" id="loginPass" name="contrasena" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-2">
-                    <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
-                </button>
-            </form>
-        </div>
-
-        <!-- Formulario Registro -->
-        <div class="tab-pane fade" id="register-panel">
-            <form id="formRegistro">
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold" for="regNombre">Nombre completo</label>
-                    <input type="text" class="form-control" id="regNombre" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold" for="regDni">DNI</label>
-                    <input type="text" class="form-control" id="regDni" inputmode="numeric"
-                           pattern="\d{8}" maxlength="8" placeholder="8 dígitos" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold" for="regCorreo">Correo electrónico</label>
-                    <input type="email" class="form-control" id="regCorreo" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold" for="regPass">Contraseña</label>
-                    <input type="password" class="form-control" id="regPass" minlength="6" maxlength="72" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold d-block">Quiero...</label>
-                    <div class="btn-group w-100" role="group" aria-label="Tipo de cuenta">
-                        <input type="radio" class="btn-check" name="regRol" id="rolLector" value="LECTOR" checked>
-                        <label class="btn btn-outline-primary" for="rolLector"><i class="bi bi-book"></i> Leer libros</label>
-                        <input type="radio" class="btn-check" name="regRol" id="rolEscritor" value="ESCRITOR">
-                        <label class="btn btn-outline-primary" for="rolEscritor"><i class="bi bi-pen"></i> Publicar libros</label>
-                    </div>
-                </div>
-                <button type="button" onclick="registrarUsuario()" class="btn btn-primary w-100 mt-2">
-                    <i class="bi bi-person-plus"></i> Crear cuenta
-                </button>
-            </form>
-        </div>
-    </div>
-    <div id="alerta" class="mt-3 text-center small fw-bold"></div>
+<body class="auth-page d-flex align-items-center justify-content-center p-3 py-sm-5">
+<div class="auth-fondo" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Mensajes de Spring Security (SecurityConfig: failureUrl y logoutSuccessUrl) -->
+<span th:if="${param.error}" hidden data-aviso="danger">Correo o contraseña incorrectos.</span>
+<span th:if="${param.logout}" hidden data-aviso="success">Cerraste sesión correctamente. ¡Vuelve pronto!</span>
+
+<main class="auth-shell">
+    <!-- Columna informativa (solo pantallas grandes) -->
+    <aside class="auth-aside d-none d-lg-flex">
+        <span class="blob blob-3"></span>
+        <a th:href="@{/}" class="navbar-brand fs-4 text-decoration-none">
+            <i class="bi bi-code-slash"></i> CodeLibrary
+        </a>
+        <div>
+            <h2 class="mb-4">Tu biblioteca de programación, siempre contigo.</h2>
+            <ul class="list-unstyled mb-0">
+                <li><i class="bi bi-check-circle-fill"></i> Libros de programación, bases de datos, IA y más.</li>
+                <li><i class="bi bi-check-circle-fill"></i> Lee desde tu computadora, tablet o teléfono.</li>
+                <li><i class="bi bi-check-circle-fill"></i> ¿Escribes? Publica tus libros y llega a más lectores.</li>
+            </ul>
+        </div>
+        <small class="opacity-75">Únete a la comunidad de desarrolladores de CodeLibrary.</small>
+    </aside>
+
+    <div class="auth-panel">
+        <a th:href="@{/}" class="auth-volver d-inline-flex align-items-center gap-1 mb-4">
+            <i class="bi bi-arrow-left"></i> Volver al inicio
+        </a>
+
+        <div class="mb-4">
+            <a th:href="@{/}" class="d-lg-none text-decoration-none">
+                <span class="d-block h3 fw-bold text-dark mb-3"><i class="bi bi-code-slash text-primary"></i> CodeLibrary</span>
+            </a>
+            <h1 class="h4 fw-bold mb-1">Te damos la bienvenida</h1>
+            <p class="text-muted small mb-0">Ingresa con tu cuenta o crea una nueva en segundos.</p>
+        </div>
+
+        <!-- Pestañas Login / Registro -->
+        <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1" id="authTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="login-tab" data-bs-toggle="pill" data-bs-target="#login-panel"
+                        type="button" role="tab" aria-controls="login-panel" aria-selected="true">Ingresar</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="register-tab" data-bs-toggle="pill" data-bs-target="#register-panel"
+                        type="button" role="tab" aria-controls="register-panel" aria-selected="false">Registrarse</button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Formulario Iniciar Sesión -->
+            <div class="tab-pane fade show active" id="login-panel" role="tabpanel" aria-labelledby="login-tab">
+                <!-- Procesado por Spring Security (SecurityConfig.formLogin) -->
+                <form id="formLogin" class="needs-validation" method="post" th:action="@{/login}" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" for="loginCorreo">Correo electrónico</label>
+                        <div class="campo-icono">
+                            <i class="bi bi-envelope" aria-hidden="true"></i>
+                            <input type="email" class="form-control" id="loginCorreo" name="correo"
+                                   autocomplete="username" placeholder="tu@correo.com" required>
+                        </div>
+                        <div class="invalid-feedback">Ingresa un correo válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" for="loginPass">Contraseña</label>
+                        <div class="campo-icono campo-clave">
+                            <i class="bi bi-lock" aria-hidden="true"></i>
+                            <input type="password" class="form-control" id="loginPass" name="contrasena"
+                                   autocomplete="current-password" placeholder="Tu contraseña" required>
+                            <button type="button" class="btn-ver-clave" data-ver-clave="loginPass"
+                                    aria-label="Mostrar contraseña" aria-pressed="false"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <div class="invalid-feedback">Ingresa tu contraseña.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-2" data-cargando="Ingresando…">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+                    </button>
+                </form>
+                <p class="text-center text-muted small mt-4 mb-0">
+                    ¿Aún no tienes cuenta?
+                    <a href="#registro" class="fw-semibold text-decoration-none" data-ir-a-pestana="register-tab">Regístrate gratis</a>
+                </p>
+            </div>
+
+            <!-- Formulario Registro (se envía como JSON a AuthController) -->
+            <div class="tab-pane fade" id="register-panel" role="tabpanel" aria-labelledby="register-tab">
+                <form id="formRegistro" class="needs-validation" novalidate>
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-7">
+                            <label class="form-label small fw-semibold" for="regNombre">Nombre completo</label>
+                            <div class="campo-icono">
+                                <i class="bi bi-person" aria-hidden="true"></i>
+                                <input type="text" class="form-control" id="regNombre" name="nombre"
+                                       autocomplete="name" maxlength="255" placeholder="Ana Pérez" required>
+                            </div>
+                            <div class="invalid-feedback">Ingresa tu nombre.</div>
+                        </div>
+                        <div class="col-sm-5">
+                            <label class="form-label small fw-semibold" for="regDni">DNI</label>
+                            <div class="campo-icono">
+                                <i class="bi bi-person-vcard" aria-hidden="true"></i>
+                                <input type="text" class="form-control" id="regDni" name="dni" inputmode="numeric"
+                                       pattern="\d{8}" maxlength="8" placeholder="8 dígitos" required>
+                            </div>
+                            <div class="invalid-feedback">El DNI tiene 8 dígitos.</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" for="regCorreo">Correo electrónico</label>
+                        <div class="campo-icono">
+                            <i class="bi bi-envelope" aria-hidden="true"></i>
+                            <input type="email" class="form-control" id="regCorreo" name="correo"
+                                   autocomplete="email" maxlength="255" placeholder="tu@correo.com" required>
+                        </div>
+                        <div class="invalid-feedback">Ingresa un correo válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold" for="regPass">Contraseña</label>
+                        <div class="campo-icono campo-clave">
+                            <i class="bi bi-lock" aria-hidden="true"></i>
+                            <input type="password" class="form-control" id="regPass" name="contrasena"
+                                   autocomplete="new-password" minlength="6" maxlength="72"
+                                   aria-describedby="ayudaClave" required>
+                            <button type="button" class="btn-ver-clave" data-ver-clave="regPass"
+                                    aria-label="Mostrar contraseña" aria-pressed="false"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
+                        <div class="form-text" id="ayudaClave">Mínimo 6 caracteres.</div>
+                    </div>
+                    <div class="mb-4">
+                        <span class="form-label small fw-semibold d-block">¿Qué quieres hacer?</span>
+                        <div class="row g-2" role="radiogroup" aria-label="Tipo de cuenta">
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="rol" id="rolLector" value="LECTOR" checked>
+                                <label class="opcion-tile" for="rolLector">
+                                    <i class="bi bi-book" aria-hidden="true"></i>
+                                    <span><strong>Leer libros</strong><small>Explora el catálogo</small></span>
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <input type="radio" class="btn-check" name="rol" id="rolEscritor" value="ESCRITOR">
+                                <label class="opcion-tile" for="rolEscritor">
+                                    <i class="bi bi-pen" aria-hidden="true"></i>
+                                    <span><strong>Publicar libros</strong><small>Comparte lo que escribes</small></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" data-cargando="Creando tu cuenta…">
+                        <i class="bi bi-person-plus"></i> Crear cuenta
+                    </button>
+                </form>
+                <p class="text-center text-muted small mt-4 mb-0">
+                    ¿Ya tienes cuenta?
+                    <a href="#" class="fw-semibold text-decoration-none" data-ir-a-pestana="login-tab">Inicia sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 <script>
-    function mostrarAlerta(mensaje, tipo) {
-        const alerta = document.getElementById('alerta');
-        alerta.className = `mt-3 text-center small fw-bold text-${tipo}`;
-        alerta.innerText = mensaje;
+    function mostrarPestana(id) {
+        bootstrap.Tab.getOrCreateInstance(document.getElementById(id)).show();
     }
 
-    async function registrarUsuario() {
-        const form = document.getElementById('formRegistro');
-        if (!form.reportValidity()) {
-            return;
-        }
+    // /login#registro abre directamente la pestaña de registro
+    if (location.hash === "#registro") {
+        mostrarPestana("register-tab");
+    }
 
-        const nombre = document.getElementById('regNombre').value.trim();
-        const dni = document.getElementById('regDni').value.trim();
-        const correo = document.getElementById('regCorreo').value.trim();
-        const contrasena = document.getElementById('regPass').value;
-        const rol = document.querySelector('input[name="regRol"]:checked').value;
+    document.querySelectorAll("[data-ir-a-pestana]").forEach(enlace => {
+        enlace.addEventListener("click", (event) => {
+            event.preventDefault();
+            mostrarPestana(enlace.dataset.irAPestana);
+        });
+    });
+
+    // El DNI solo admite dígitos
+    const campoDni = document.getElementById("regDni");
+    campoDni.addEventListener("input", () => {
+        campoDni.value = campoDni.value.replace(/\D/g, "");
+    });
+
+    // app.js valida el formulario antes; aquí solo llegan envíos válidos
+    document.getElementById("formRegistro").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const datos = Object.fromEntries(new FormData(form));
 
         // Evita que un doble clic envíe el registro dos veces
-        const boton = form.querySelector('button');
-        boton.disabled = true;
+        const boton = form.querySelector('button[type="submit"]');
+        ponerCargando(boton, true);
         try {
             const res = await fetch('/api/auth/registro', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre, dni, correo, contrasena, rol })
+                body: JSON.stringify(datos)
             });
-            const data = await res.json();
+            const respuesta = await res.json().catch(() => ({}));
             if (res.ok) {
-                mostrarAlerta('Usuario registrado con éxito. Ya puedes iniciar sesión.', 'success');
+                mostrarAviso('Tu cuenta está lista. Ya puedes iniciar sesión.', 'success');
                 form.reset();
+                form.classList.remove("was-validated");
+                // Lleva al usuario a ingresar con el correo que acaba de registrar
+                document.getElementById("loginCorreo").value = datos.correo.trim();
+                document.getElementById("login-tab").addEventListener("shown.bs.tab",
+                    () => document.getElementById("loginPass").focus(), { once: true });
+                mostrarPestana("login-tab");
             } else {
-                mostrarAlerta(data.error || 'Error al registrar', 'danger');
+                mostrarAviso(respuesta.error || 'No se pudo crear la cuenta. Inténtalo de nuevo.', 'danger');
             }
         } catch (e) {
-            mostrarAlerta('Error de conexión con el servidor.', 'danger');
+            mostrarAviso('Error de conexión con el servidor.', 'danger');
         } finally {
-            boton.disabled = false;
+            ponerCargando(boton, false);
         }
-    }
+    });
 </script>
 </body>
 </html>

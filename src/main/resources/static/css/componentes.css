@@ -1,0 +1,325 @@
+/* ==========================================================================
+   CodeLibrary - Componentes de interfaz
+   Campos de formulario, avisos (toasts), diálogo de confirmación y tablas
+   que se apilan en móvil. Usa las variables de estilo.css (se carga antes).
+   ========================================================================== */
+
+/* ---------- CAMPOS DE FORMULARIO ---------- */
+/* Campo con ícono a la izquierda (y botón opcional a la derecha) */
+.campo-icono {
+    position: relative;
+}
+
+.campo-icono > .bi {
+    position: absolute;
+    top: 50%;
+    left: 0.95rem;
+    transform: translateY(-50%);
+    color: var(--cl-text-muted);
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.campo-icono:focus-within > .bi {
+    color: var(--cl-violet);
+}
+
+.campo-icono > .form-control {
+    padding-left: 2.6rem;
+}
+
+/* Contraseña: el botón del ojo ocupa el lugar del ícono de validación de Bootstrap */
+.campo-clave > .form-control,
+.was-validated .campo-clave > .form-control:invalid,
+.was-validated .campo-clave > .form-control:valid {
+    padding-right: 3rem;
+    background-image: none;
+}
+
+.btn-ver-clave {
+    position: absolute;
+    top: 50%;
+    right: 0.4rem;
+    transform: translateY(-50%);
+    padding: 0.3rem 0.55rem;
+    border: 0;
+    border-radius: 0.6rem;
+    background: none;
+    color: var(--cl-text-muted);
+}
+
+.btn-ver-clave:hover,
+.btn-ver-clave:focus-visible {
+    color: var(--cl-violet);
+    background-color: rgba(102, 16, 242, 0.08);
+}
+
+/* El mensaje de error queda fuera del contenedor del campo */
+.was-validated .campo-icono:has(:invalid) + .invalid-feedback,
+.was-validated .zona-archivo:has(:invalid) + .invalid-feedback {
+    display: block;
+}
+
+/* Opciones tipo tarjeta (radio buttons) */
+.opcion-tile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1.5px solid var(--bs-border-color);
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.opcion-tile > .bi {
+    font-size: 1.35rem;
+    color: var(--cl-text-muted);
+}
+
+.opcion-tile strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.opcion-tile small {
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.25;
+    color: var(--cl-text-muted);
+}
+
+.opcion-tile:hover {
+    border-color: rgba(102, 16, 242, 0.45);
+}
+
+.btn-check:checked + .opcion-tile {
+    border-color: var(--cl-violet);
+    background-color: rgba(102, 16, 242, 0.06);
+    box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.12);
+}
+
+.btn-check:checked + .opcion-tile > .bi {
+    color: var(--cl-violet);
+}
+
+.btn-check:focus-visible + .opcion-tile {
+    outline: 2px solid var(--cl-violet);
+    outline-offset: 2px;
+}
+
+/* Zona para arrastrar o elegir un archivo */
+.zona-archivo {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 1.5rem 1rem;
+    border: 2px dashed rgba(102, 16, 242, 0.3);
+    border-radius: 1rem;
+    background-color: rgba(102, 16, 242, 0.03);
+    text-align: center;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.zona-archivo > .bi {
+    font-size: 2rem;
+    color: var(--cl-violet);
+}
+
+.zona-archivo-nombre {
+    font-weight: 600;
+    word-break: break-word;
+}
+
+/* El input real cubre toda la zona: recibe clics y archivos soltados */
+.zona-archivo input[type="file"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.zona-archivo:hover,
+.zona-archivo.arrastrando {
+    border-color: var(--cl-violet);
+    background-color: rgba(102, 16, 242, 0.07);
+}
+
+.zona-archivo:focus-within {
+    border-color: var(--cl-violet);
+    box-shadow: 0 0 0 0.2rem rgba(102, 16, 242, 0.15);
+}
+
+.zona-archivo.con-archivo {
+    border-style: solid;
+    border-color: #198754;
+    background-color: rgba(25, 135, 84, 0.05);
+}
+
+.zona-archivo.con-archivo > .bi {
+    color: #198754;
+}
+
+.was-validated .zona-archivo:has(:invalid) {
+    border-color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.04);
+}
+
+.was-validated .zona-archivo:has(:invalid) > .bi {
+    color: #dc3545;
+}
+
+/* ---------- AVISOS (toasts) ---------- */
+.avisos {
+    top: 0;
+    right: 0;
+    width: min(100%, 400px);
+    padding: 1rem;
+}
+
+.aviso {
+    --bs-toast-max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+    border: 0;
+    border-left: 5px solid var(--aviso-color);
+    border-radius: 1rem;
+    background-color: #fff;
+    box-shadow: 0 18px 40px rgba(13, 27, 42, 0.2);
+    pointer-events: auto;
+}
+
+.aviso.show {
+    animation: aviso-entrar 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.aviso-icono {
+    font-size: 1.35rem;
+    line-height: 1.2;
+    color: var(--aviso-color);
+}
+
+.aviso-titulo {
+    font-family: "Poppins", "Inter", sans-serif;
+    font-size: 0.95rem;
+}
+
+.aviso-texto {
+    font-size: 0.875rem;
+    color: var(--cl-text-muted);
+}
+
+.aviso-success { --aviso-color: #198754; }
+.aviso-danger { --aviso-color: #dc3545; }
+.aviso-warning { --aviso-color: #fd7e14; }
+.aviso-info { --aviso-color: var(--cl-blue); }
+
+@keyframes aviso-entrar {
+    from { transform: translateX(110%); }
+}
+
+/* En móvil aparecen abajo, al alcance del pulgar y sin tapar la navbar */
+@media (max-width: 575.98px) {
+    .avisos {
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        padding: 0.75rem;
+    }
+
+    @keyframes aviso-entrar {
+        from { transform: translateY(120%); }
+    }
+}
+
+/* ---------- DIÁLOGO DE CONFIRMACIÓN ---------- */
+.modal-confirmar .modal-dialog {
+    max-width: 400px;
+}
+
+.modal-confirmar .modal-content {
+    border: 0;
+    border-radius: var(--cl-radius);
+    box-shadow: 0 30px 70px rgba(13, 27, 42, 0.3);
+}
+
+.confirmar-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* ---------- TABLAS QUE SE APILAN EN MÓVIL ---------- */
+@media (max-width: 767.98px) {
+    .tabla-apilada,
+    .tabla-apilada tbody,
+    .tabla-apilada tr {
+        display: block;
+    }
+
+    .tabla-apilada thead {
+        display: none;
+    }
+
+    .tabla-apilada tr {
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.75rem;
+        border: 1px solid rgba(13, 27, 42, 0.08);
+        border-radius: 1rem;
+    }
+
+    .tabla-apilada tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .tabla-apilada td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.35rem 0;
+        border: 0;
+        text-align: right;
+    }
+
+    .tabla-apilada td[data-label]::before {
+        content: attr(data-label);
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--cl-text-muted);
+        text-align: left;
+    }
+
+    /* La primera celda (el título) hace de encabezado de la tarjeta */
+    .tabla-apilada td:first-child {
+        display: block;
+        padding-bottom: 0.6rem;
+        margin-bottom: 0.35rem;
+        border-bottom: 1px dashed rgba(13, 27, 42, 0.12);
+        text-align: left;
+    }
+
+    .tabla-apilada .acciones {
+        width: 100%;
+        padding-top: 0.4rem;
+    }
+
+    .tabla-apilada .acciones form {
+        flex: 1;
+    }
+
+    .tabla-apilada .acciones form .btn {
+        width: 100%;
+    }
+}

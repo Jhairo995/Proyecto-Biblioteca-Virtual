@@ -25,7 +25,8 @@ body {
     color: var(--cl-navy);
 }
 
-h1, h2, h3, h4, h5, .navbar-brand, .price {
+h1, h2, h3, h4, h5,
+.h1, .h2, .h3, .h4, .h5, .navbar-brand, .price {
     font-family: "Poppins", "Inter", sans-serif;
 }
 
@@ -398,33 +399,111 @@ h1, h2, h3, h4, h5, .navbar-brand, .price {
 
 /* ---------- AUTENTICACIÓN ---------- */
 .auth-page {
-    position: relative;
-    overflow: hidden;
     min-height: 100vh;
+    min-height: 100dvh;
     background: var(--cl-navy);
     isolation: isolate;
 }
 
-.auth-card {
-    max-width: 440px;
+/* Las manchas de luz van en una capa fija: así no ensanchan la página
+   y se puede hacer scroll cuando el formulario no cabe en la pantalla */
+.auth-fondo {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.auth-shell {
+    display: grid;
     width: 100%;
+    max-width: 460px;
+    overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 28px;
-    background-color: rgba(255, 255, 255, 0.96);
+    background-color: rgba(255, 255, 255, 0.97);
     box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
 }
 
-.auth-card .nav-pills .nav-link {
+/* Columna informativa: solo en pantallas grandes */
+.auth-aside {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 3rem;
+    color: #fff;
+    background: linear-gradient(160deg, var(--cl-blue), var(--cl-violet));
+}
+
+.auth-aside .blob {
+    opacity: 0.35;
+}
+
+.auth-aside a {
+    color: #fff;
+}
+
+.auth-aside h2 {
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.auth-aside li {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.auth-aside li i {
+    color: var(--cl-cyan);
+    font-size: 1.15rem;
+}
+
+.auth-panel {
+    padding: 2rem 1.5rem;
+}
+
+@media (min-width: 576px) {
+    .auth-panel {
+        padding: 2.5rem 3rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .auth-shell {
+        max-width: 980px;
+        grid-template-columns: 0.9fr 1fr;
+    }
+}
+
+.auth-volver {
+    color: var(--cl-text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.auth-volver:hover {
+    color: var(--cl-violet);
+}
+
+.auth-shell .nav-pills .nav-link {
     border-radius: 999px;
     font-weight: 600;
     color: var(--cl-text-muted);
 }
 
-.auth-card .nav-pills .nav-link.active {
+.auth-shell .nav-pills .nav-link.active {
     background: var(--cl-gradient);
     color: #fff;
 }
 
+/* ---------- FORMULARIOS ---------- */
 .form-control,
 .form-select {
     border-radius: 0.8rem;
@@ -452,6 +531,62 @@ h1, h2, h3, h4, h5, .navbar-brand, .price {
 
 .stat-icon.cyan {
     background: var(--cl-gradient-cyan);
+}
+
+/* ---------- VISOR DE PDF ---------- */
+.visor-pdf {
+    display: block;
+    width: 100%;
+    height: calc(100vh - 220px);
+    min-height: 480px;
+    border: 0;
+}
+
+/* ---------- PÁGINA DE ERROR ---------- */
+.error-codigo {
+    font-family: "Poppins", "Inter", sans-serif;
+    font-size: clamp(5rem, 20vw, 9rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: var(--cl-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* ---------- AJUSTES RESPONSIVOS ---------- */
+@media (max-width: 991.98px) {
+    /* Menú desplegado en móvil: botones a todo el ancho */
+    .navbar-collapse {
+        padding-bottom: 1rem;
+    }
+
+    .navbar-collapse .btn {
+        width: 100%;
+    }
+
+    /* En la lista vertical el subrayado cruzaría todo el ancho: queda como acento corto */
+    .navbar-dark .nav-link.active::after,
+    .navbar-dark .nav-link:hover::after {
+        right: auto;
+        left: 0;
+        width: 1.75rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .hero {
+        padding: 64px 0 72px;
+    }
+
+    .page-hero {
+        padding: 48px 0 40px;
+    }
+
+    .book-cover {
+        height: 190px;
+    }
 }
 
 /* ---------- FOOTER ---------- */

@@ -64,6 +64,16 @@ class LectorServiceTest {
         verify(libroRepository).findByEstadoAndCategoriaIgnoreCaseOrderByFechaRegistroDesc(EstadoLibro.APROBADO, "Bases de Datos");
     }
 
+    @Test
+    void registrarVistaSumaUnaVistaAlLibro() {
+        Libro libro = libroDe("Java");
+        libro.setId(42L);
+
+        lectorService.registrarVista(libro);
+
+        verify(libroRepository).sumarVista(42L);
+    }
+
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"   "})

@@ -84,6 +84,22 @@ class VistasTest {
     }
 
     @Test
+    void laSeccionDeAutoresEsPublica() {
+        assertThat(mvc.get().uri("/autores"))
+                .hasStatusOk()
+                .bodyText()
+                .contains("Nuestros <span class=\"text-gradient\">autores</span>");
+    }
+
+    @Test
+    void elMenuYElPieEnlazanALaSeccionDeAutores() {
+        assertThat(mvc.get().uri("/"))
+                .hasStatusOk()
+                .bodyText()
+                .containsPattern("(?s)href=\"/autores\".*href=\"/autores\"");
+    }
+
+    @Test
     void accesoDenegadoUsaLaPaginaDeErrorPropia() {
         assertThat(mvc.get().uri("/error").accept(MediaType.TEXT_HTML)
                 .requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 403))

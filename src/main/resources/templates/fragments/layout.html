@@ -41,6 +41,9 @@
                     <a class="nav-link" th:classappend="${activo == 'categorias'} ? 'active'" th:href="@{/categorias}">Categorías</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" th:classappend="${activo == 'autores'} ? 'active'" th:href="@{/autores}">Autores</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" th:classappend="${activo == 'suscripcion'} ? 'active'" th:href="@{/suscripcion}">Planes</a>
                 </li>
                 <th:block th:if="${usuarioActual == null}">
@@ -225,7 +228,7 @@
                 <ul class="list-unstyled">
                     <li class="mb-2"><a th:href="@{/catalogo}">Libros</a></li>
                     <li class="mb-2"><a th:href="@{/categorias}">Categorías</a></li>
-                    <li class="mb-2"><a href="#">Autores</a></li>
+                    <li class="mb-2"><a th:href="@{/autores}">Autores</a></li>
                 </ul>
             </div>
             <div class="col-6 col-lg-2">

@@ -244,7 +244,8 @@ h1, h2, h3, h4, h5,
 .category-card,
 .book-card,
 .pricing-card,
-.panel-card {
+.panel-card,
+.autor-card {
     border: 1px solid rgba(13, 27, 42, 0.06);
     border-radius: var(--cl-radius);
     box-shadow: var(--cl-shadow);
@@ -254,7 +255,8 @@ h1, h2, h3, h4, h5,
 
 .category-card:hover,
 .book-card:hover,
-.pricing-card:hover {
+.pricing-card:hover,
+.autor-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--cl-shadow-hover);
 }
@@ -276,6 +278,43 @@ h1, h2, h3, h4, h5,
 
 .category-card:hover .category-icon {
     transform: rotate(-8deg) scale(1.08);
+}
+
+/* ---------- AUTORES ---------- */
+.autor-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    font-family: "Poppins", "Inter", sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--cl-gradient);
+    box-shadow: var(--cl-glow);
+}
+
+.autor-dato {
+    height: 100%;
+    padding: 0.75rem 0.5rem;
+    border-radius: 1rem;
+    background-color: var(--cl-surface);
+}
+
+.autor-dato-valor {
+    display: block;
+    font-family: "Poppins", "Inter", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.autor-dato small {
+    font-size: 0.78rem;
+    color: var(--cl-text-muted);
 }
 
 /* ---------- LIBROS ---------- */

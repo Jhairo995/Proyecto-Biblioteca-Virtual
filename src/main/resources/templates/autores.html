@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Autores')}"></head>
+
+<body>
+<nav th:replace="~{fragments/layout :: navbar('autores')}"></nav>
+
+<section class="page-hero">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <div class="container">
+        <span class="hero-badge mb-3"><i class="bi bi-people"></i> Comunidad</span>
+        <h1 class="fw-bold display-5">Nuestros <span class="text-gradient">autores</span></h1>
+        <p class="lead mb-0">Conoce a los escritores que comparten sus libros en CodeLibrary.</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container py-4">
+        <!-- Todavía no hay escritores registrados -->
+        <div th:if="${#lists.isEmpty(autores)}" class="text-center py-5">
+            <span class="category-icon"><i class="bi bi-people"></i></span>
+            <h2 class="h5 fw-bold mt-4">Aún no hay autores registrados</h2>
+            <p class="text-muted">¿Escribes sobre programación? Crea tu cuenta de escritor y publica tu primer libro.</p>
+            <a th:href="@{/login#registro}" class="btn btn-primary"><i class="bi bi-pen"></i> Quiero publicar</a>
+        </div>
+
+        <th:block th:unless="${#lists.isEmpty(autores)}">
+            <!-- Totales de la comunidad -->
+            <div class="row g-3 mb-5">
+                <div class="col-4">
+                    <div class="card panel-card h-100 p-2 p-sm-3 text-center">
+                        <span class="text-muted small">Autores</span>
+                        <div class="h2 fw-bold mb-0" th:text="${#lists.size(autores)}">0</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card panel-card h-100 p-2 p-sm-3 text-center">
+                        <span class="text-muted small">Libros publicados</span>
+                        <div class="h2 fw-bold mb-0"
+                             th:text="${#numbers.formatInteger(#aggregates.sum(autores.![librosPublicados()]), 1, 'POINT')}">0</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="card panel-card h-100 p-2 p-sm-3 text-center">
+                        <span class="text-muted small">Vistas totales</span>
+                        <div class="h2 fw-bold mb-0"
+                             th:text="${#numbers.formatInteger(#aggregates.sum(autores.![vistas()]), 1, 'POINT')}">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordenados por libros publicados y luego por vistas (UsuarioRepository.resumenAutores) -->
+            <div class="row g-4">
+                <div th:each="autor : ${autores}" class="col-12 col-sm-6 col-lg-4">
+                    <article class="card autor-card h-100 reveal">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <span class="autor-avatar" aria-hidden="true" th:text="${autor.iniciales()}">AP</span>
+                                <div>
+                                    <h2 class="h5 fw-bold mb-0" th:text="${autor.nombre()}">Ana Pérez</h2>
+                                    <small th:if="${autor.librosPublicados() == 0}" class="text-muted">Aún sin libros publicados</small>
+                                </div>
+                            </div>
+                            <div class="row g-2 text-center">
+                                <div class="col-6">
+                                    <div class="autor-dato">
+                                        <span class="autor-dato-valor"
+                                              th:text="${#numbers.formatInteger(autor.librosPublicados(), 1, 'POINT')}">2</span>
+                                        <small><i class="bi bi-journal-bookmark"></i>
+                                            <span th:text="${autor.librosPublicados() == 1} ? 'libro publicado' : 'libros publicados'">libros publicados</span></small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="autor-dato">
+                                        <span class="autor-dato-valor"
+                                              th:text="${#numbers.formatInteger(autor.vistas(), 1, 'POINT')}">120</span>
+                                        <small><i class="bi bi-eye"></i>
+                                            <span th:text="${autor.vistas() == 1} ? 'vista' : 'vistas'">vistas</span></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </th:block>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

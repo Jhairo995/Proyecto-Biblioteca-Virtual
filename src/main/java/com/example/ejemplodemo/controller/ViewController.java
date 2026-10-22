@@ -1,5 +1,6 @@
 package com.example.ejemplodemo.controller;
 
+import com.example.ejemplodemo.Service.AutorService;
 import com.example.ejemplodemo.Service.LectorService;
 import com.example.ejemplodemo.model.Libro;
 import org.springframework.stereotype.Controller;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ViewController {
 
     private final LectorService lectorService;
+    private final AutorService autorService;
 
-    public ViewController(LectorService lectorService) {
+    public ViewController(LectorService lectorService, AutorService autorService) {
         this.lectorService = lectorService;
+        this.autorService = autorService;
     }
 
     @GetMapping("/")
@@ -39,6 +42,13 @@ public class ViewController {
     @GetMapping("/categorias")
     public String categorias() {
         return "categorias";
+    }
+
+    // Autores: escritores con sus libros publicados y el total de vistas
+    @GetMapping("/autores")
+    public String autores(Model model) {
+        model.addAttribute("autores", autorService.autores());
+        return "autores";
     }
 
     @GetMapping("/suscripcion")

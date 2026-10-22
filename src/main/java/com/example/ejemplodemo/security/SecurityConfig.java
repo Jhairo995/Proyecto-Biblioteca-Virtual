@@ -26,7 +26,7 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .authorizeHttpRequests(auth -> auth
                 // Rutas públicas: Vistas web principales y archivos estáticos (CSS, JS, imágenes)
-                .requestMatchers("/", "/login", "/catalogo", "/categorias", "/suscripcion", "/error").permitAll()
+                .requestMatchers("/", "/login", "/catalogo", "/categorias", "/autores", "/suscripcion", "/error").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 // Rutas públicas de API: Registro y datos de inicio
                 .requestMatchers("/api/auth/**", "/api/inicio/**").permitAll()

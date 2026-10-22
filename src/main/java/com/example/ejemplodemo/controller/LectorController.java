@@ -57,6 +57,7 @@ public class LectorController {
             redirect.addFlashAttribute("error", "«" + libro.getTitulo() + "» es un libro Premium. Mejora tu plan para leerlo.");
             return "redirect:/suscripcion";
         }
+        lectorService.registrarVista(libro);
         model.addAttribute("libro", libro);
         return "leer";
     }

@@ -3,6 +3,7 @@ package com.example.ejemplodemo.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -43,6 +44,12 @@ public class Libro {
 
     // Nombre del archivo almacenado en disco
     private String archivo;
+
+    // Veces que un lector abrió el libro en el visor (LectorService.registrarVista).
+    // El DEFAULT 0 permite que ddl-auto=update agregue la columna a tablas con libros existentes
+    @ColumnDefault("0")
+    @Column(nullable = false)
+    private long vistas;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "escritor_id")

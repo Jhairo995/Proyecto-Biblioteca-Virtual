@@ -45,6 +45,12 @@ public class LectorService {
         return libroRepository.findByEstadoAndCategoriaIgnoreCaseOrderByFechaRegistroDesc(EstadoLibro.APROBADO, categoria.trim());
     }
 
+    // Cada vez que un lector abre un libro en el visor cuenta como una vista
+    @Transactional
+    public void registrarVista(Libro libro) {
+        libroRepository.sumarVista(libro.getId());
+    }
+
     public List<Lectura> miLista(Usuario lector) {
         return lecturaRepository.findByLectorOrderByFechaAgregadoDesc(lector);
     }

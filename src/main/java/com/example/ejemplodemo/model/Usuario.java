@@ -6,7 +6,12 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
-@Table(name = "usuarios")
+// Las claves UNIQUE van a nivel de tabla porque con ddl-auto=update Hibernate también las agrega
+// a tablas que ya existen; un @Column(unique = true) solo se aplica cuando crea la tabla desde cero
+@Table(name = "usuarios", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_usuarios_correo", columnNames = "correo"),
+        @UniqueConstraint(name = "uk_usuarios_dni", columnNames = "dni")
+})
 @Data
 public class Usuario {
     @Id
@@ -16,7 +21,7 @@ public class Usuario {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String correo;
 
     @Column(nullable = false)
@@ -33,7 +38,7 @@ public class Usuario {
     @Column(nullable = false, length = 20)
     private NivelCuenta nivelCuenta = NivelCuenta.GRATUITO;
 
-    @Column(unique = true, nullable = false, length = 8)
+    @Column(nullable = false, length = 8)
     private String dni;
 
     public String getCorreo() { return correo; }

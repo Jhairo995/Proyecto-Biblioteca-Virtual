@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "libros")
@@ -49,6 +50,10 @@ public class Libro {
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaRegistro = LocalDateTime.now();
+
+    // Categorías del catálogo: las mismas que ofrece el formulario del escritor (escritor.html)
+    public static final List<String> CATEGORIAS =
+            List.of("Desarrollo Web", "Java", "Bases de Datos", "IA y Machine Learning", "Otros");
 
     // Clase CSS de la portada según la categoría (no se persiste: la entidad usa acceso por campo)
     public String getPortada() {

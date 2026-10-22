@@ -10,13 +10,31 @@
     <span class="blob blob-2"></span>
     <div class="container">
         <span class="hero-badge mb-3"><i class="bi bi-collection"></i> Biblioteca</span>
-        <h1 class="fw-bold display-5">Explora el <span class="text-gradient">catálogo completo</span></h1>
-        <p class="lead mb-0">Todos nuestros libros de programación en un solo lugar.</p>
+        <h1 th:if="${categoriaActual == null}" class="fw-bold display-5">Explora el <span class="text-gradient">catálogo completo</span></h1>
+        <h1 th:unless="${categoriaActual == null}" class="fw-bold display-5">Libros de <span class="text-gradient" th:text="${categoriaActual}">Java</span></h1>
+        <p class="lead mb-0" th:text="${categoriaActual == null} ? 'Todos nuestros libros de programación en un solo lugar.' : 'Recursos publicados en esta categoría.'">
+            Todos nuestros libros de programación en un solo lugar.
+        </p>
     </div>
 </section>
 
 <section id="libros" class="py-5">
     <div class="container py-4">
+        <!-- Filtro por categoría (?categoria=...) -->
+        <nav class="filtro-categorias mb-3" aria-label="Filtrar por categoría">
+            <a th:href="@{/catalogo}" class="filtro-chip"
+               th:classappend="${categoriaActual == null} ? 'active'"
+               th:aria-current="${categoriaActual == null} ? 'page'">Todas</a>
+            <a th:each="categoria : ${categorias}" th:href="@{/catalogo(categoria=${categoria})}" class="filtro-chip"
+               th:with="elegida=${#strings.equalsIgnoreCase(categoria, categoriaActual)}"
+               th:classappend="${elegida} ? 'active'"
+               th:aria-current="${elegida} ? 'page'"
+               th:text="${categoria}">Java</a>
+        </nav>
+
+        <p th:unless="${#lists.isEmpty(libros)}" class="text-muted small mb-4"
+           th:text="${#lists.size(libros) == 1} ? '1 libro' : ${#lists.size(libros)} + ' libros'">4 libros</p>
+
         <!-- Libros publicados por los escritores y aprobados por el administrador -->
         <div th:unless="${#lists.isEmpty(libros)}" class="row g-4">
             <th:block th:each="libro : ${libros}">
@@ -24,20 +42,32 @@
             </th:block>
         </div>
 
-        <!-- Muestras mientras no haya libros publicados -->
-        <p th:if="${#lists.isEmpty(libros)}" class="text-muted text-center mb-4">
-            Aún no hay libros publicados por nuestros escritores. Mientras tanto, mira algunas muestras:
-        </p>
-        <div th:if="${#lists.isEmpty(libros)}" class="row g-4">
-            <div th:replace="~{fragments/layout :: libro('JavaScript Moderno', 'JavaScript', 'Aprende JavaScript desde cero hasta conceptos avanzados.', 'cover-blue', '4.9')}"></div>
-            <div th:replace="~{fragments/layout :: libro('Python desde cero', 'Python', 'Aprende los fundamentos de Python mediante ejemplos prácticos.', 'cover-green', '4.8')}"></div>
-            <div th:replace="~{fragments/layout :: libro('SQL Profesional', 'Bases de datos', 'Consultas, relaciones, índices y optimización.', 'cover-dark', '4.7')}"></div>
-            <div th:replace="~{fragments/layout :: libro('React para desarrolladores', 'React', 'Componentes, hooks, estados y aplicaciones modernas.', 'cover-orange', '4.9')}"></div>
-            <div th:replace="~{fragments/layout :: libro('Spring Boot en acción', 'Java', 'Crea APIs REST y aplicaciones web con Spring Boot.', 'cover-cyan', '4.8')}"></div>
-            <div th:replace="~{fragments/layout :: libro('Machine Learning práctico', 'IA', 'Modelos, datos y entrenamiento con Python.', 'cover-pink', '4.7')}"></div>
-            <div th:replace="~{fragments/layout :: libro('Git y GitHub', 'Herramientas', 'Control de versiones, ramas y trabajo en equipo.', 'cover-dark', '4.9')}"></div>
-            <div th:replace="~{fragments/layout :: libro('Node.js a fondo', 'JavaScript', 'Servidores, APIs y aplicaciones en tiempo real.', 'cover-green', '4.6')}"></div>
+        <!-- Categoría elegida sin libros publicados -->
+        <div th:if="${categoriaActual != null and #lists.isEmpty(libros)}" class="text-center py-5">
+            <span class="category-icon"><i class="bi bi-journal-x"></i></span>
+            <h2 class="h5 fw-bold mt-4" th:text="|Aún no hay libros publicados en «${categoriaActual}»|">Aún no hay libros publicados</h2>
+            <p class="text-muted">Prueba con otra categoría o explora todo el catálogo.</p>
+            <a th:href="@{/catalogo}" class="btn btn-primary">
+                <i class="bi bi-collection"></i> Ver todo el catálogo
+            </a>
         </div>
+
+        <!-- Muestras mientras no haya ningún libro publicado -->
+        <th:block th:if="${categoriaActual == null and #lists.isEmpty(libros)}">
+            <p class="text-muted text-center mt-4 mb-4">
+                Aún no hay libros publicados por nuestros escritores. Mientras tanto, mira algunas muestras:
+            </p>
+            <div class="row g-4">
+                <div th:replace="~{fragments/layout :: libro('JavaScript Moderno', 'JavaScript', 'Aprende JavaScript desde cero hasta conceptos avanzados.', 'cover-blue', '4.9')}"></div>
+                <div th:replace="~{fragments/layout :: libro('Python desde cero', 'Python', 'Aprende los fundamentos de Python mediante ejemplos prácticos.', 'cover-green', '4.8')}"></div>
+                <div th:replace="~{fragments/layout :: libro('SQL Profesional', 'Bases de datos', 'Consultas, relaciones, índices y optimización.', 'cover-dark', '4.7')}"></div>
+                <div th:replace="~{fragments/layout :: libro('React para desarrolladores', 'React', 'Componentes, hooks, estados y aplicaciones modernas.', 'cover-orange', '4.9')}"></div>
+                <div th:replace="~{fragments/layout :: libro('Spring Boot en acción', 'Java', 'Crea APIs REST y aplicaciones web con Spring Boot.', 'cover-cyan', '4.8')}"></div>
+                <div th:replace="~{fragments/layout :: libro('Machine Learning práctico', 'IA', 'Modelos, datos y entrenamiento con Python.', 'cover-pink', '4.7')}"></div>
+                <div th:replace="~{fragments/layout :: libro('Git y GitHub', 'Herramientas', 'Control de versiones, ramas y trabajo en equipo.', 'cover-dark', '4.9')}"></div>
+                <div th:replace="~{fragments/layout :: libro('Node.js a fondo', 'JavaScript', 'Servidores, APIs y aplicaciones en tiempo real.', 'cover-green', '4.6')}"></div>
+            </div>
+        </th:block>
     </div>
 </section>
 

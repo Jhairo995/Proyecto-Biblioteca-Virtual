@@ -57,6 +57,33 @@ class VistasTest {
     }
 
     @Test
+    void verRecursosDeUnaCategoriaEnlazaAlCatalogoFiltrado() {
+        assertThat(mvc.get().uri("/categorias"))
+                .hasStatusOk()
+                .bodyText()
+                .contains("href=\"/catalogo?categoria=Java\"")
+                .contains("href=\"/catalogo?categoria=Desarrollo%20Web\"");
+    }
+
+    @Test
+    void catalogoFiltradoIndicaLaCategoriaElegida() {
+        assertThat(mvc.get().uri("/catalogo").param("categoria", "Java"))
+                .hasStatusOk()
+                .bodyText()
+                .contains("Libros de <span class=\"text-gradient\">Java</span>")
+                .contains("aria-current=\"page\"");
+    }
+
+    @Test
+    void categoriaSinLibrosMuestraAvisoEnVezDeLibrosDeMuestra() {
+        assertThat(mvc.get().uri("/catalogo").param("categoria", "Categoría inexistente"))
+                .hasStatusOk()
+                .bodyText()
+                .contains("Aún no hay libros publicados en «Categoría inexistente»")
+                .doesNotContain("JavaScript Moderno");
+    }
+
+    @Test
     void accesoDenegadoUsaLaPaginaDeErrorPropia() {
         assertThat(mvc.get().uri("/error").accept(MediaType.TEXT_HTML)
                 .requestAttr(RequestDispatcher.ERROR_STATUS_CODE, 403))

@@ -293,6 +293,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ==========================================
+    // FILTRO DE CATEGORÍAS: en móvil, deja visible el chip elegido
+    // ==========================================
+
+    const chipActivo = document.querySelector(".filtro-chip.active");
+    if (chipActivo) {
+        chipActivo.parentElement.scrollLeft = chipActivo.offsetLeft - 16;
+    }
+
+
+    // ==========================================
     // ACTUALIZAR AÑO DEL FOOTER
     // ==========================================
 

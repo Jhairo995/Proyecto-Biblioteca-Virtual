@@ -12,6 +12,8 @@ import java.util.List;
 public interface LibroRepository extends JpaRepository<Libro, Long> {
     List<Libro> findByEstadoOrderByFechaRegistroDesc(EstadoLibro estado);
 
+    List<Libro> findByEstadoAndCategoriaIgnoreCaseOrderByFechaRegistroDesc(EstadoLibro estado, String categoria);
+
     List<Libro> findByEscritorOrderByFechaRegistroDesc(Usuario escritor);
 
     long countByEstado(EstadoLibro estado);

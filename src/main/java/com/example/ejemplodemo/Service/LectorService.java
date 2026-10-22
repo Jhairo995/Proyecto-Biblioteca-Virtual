@@ -37,6 +37,14 @@ public class LectorService {
         return libroRepository.findByEstadoOrderByFechaRegistroDesc(EstadoLibro.APROBADO);
     }
 
+    // Catálogo filtrado por categoría; sin categoría (null o en blanco) devuelve todo el catálogo
+    public List<Libro> catalogo(String categoria) {
+        if (categoria == null || categoria.isBlank()) {
+            return catalogo();
+        }
+        return libroRepository.findByEstadoAndCategoriaIgnoreCaseOrderByFechaRegistroDesc(EstadoLibro.APROBADO, categoria.trim());
+    }
+
     public List<Lectura> miLista(Usuario lector) {
         return lecturaRepository.findByLectorOrderByFechaAgregadoDesc(lector);
     }

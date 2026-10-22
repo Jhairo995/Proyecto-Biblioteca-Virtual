@@ -42,9 +42,9 @@ Bienvenido al repositorio del **Proyecto Biblioteca Virtual**, una aplicación w
 
 Antes de ejecutar el proyecto, asegúrate de contar con lo siguiente instalado en tu equipo:
 
-1. **Java JDK 17** o superior.
+1. **Java JDK 25** (es la versión que exige `pom.xml`; con una versión anterior no compila).
 2. **Apache Maven 3.8+** (o utilizar el wrapper `./mvnw` incluido).
-3. **MySQL Server 8.0+** corriendo en el puerto por defecto (`3306`).
+3. **MySQL Server 8.0+** o el **MariaDB de XAMPP** corriendo en el puerto por defecto (`3306`).
 4. **IDE recomendado:** IntelliJ IDEA, Eclipse o VS Code con soporte para Spring Boot.
 
 ---
@@ -58,29 +58,43 @@ cd Proyecto-Biblioteca-Virtual
 ```
 
 ### 2. Configurar la Base de Datos
-Crea una base de datos MySQL llamada `bd_biblioteca` (o edita la configuración en `src/main/resources/application.properties` con tus credenciales de MySQL):
+No hace falta crear nada a mano: al arrancar se crea la base de datos `biblioteca_virtual` y Hibernate genera las tablas.
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/bd_biblioteca?useSSL=false&serverTimezone=UTC
-spring.datasource.username=tu_usuario
-spring.datasource.password=tu_contraseña
+El proyecto se conecta como `root` con la contraseña `123456`. Si tu MySQL usa otra (en XAMPP suele estar vacía), no edites `application.properties`: define estas variables de entorno antes de ejecutar:
+
+```bash
+export SPRING_DATASOURCE_USERNAME=root
+export SPRING_DATASOURCE_PASSWORD=          # vacía en XAMPP
 ```
 
-### 3. Compilar el Proyecto
+### 3. Crear el administrador
+Los administradores no pueden registrarse desde la web. El administrador inicial (`admin@codelibrary.com`) se crea al arrancar **solo si** defines la variable de entorno `ADMIN_PASSWORD`:
+
+```bash
+export ADMIN_PASSWORD='elige_una_contraseña'        # Linux / macOS
+$env:ADMIN_PASSWORD = 'elige_una_contraseña'        # Windows PowerShell
+```
+
+En IntelliJ o VS Code agrégala en las *Environment variables* de la configuración de ejecución. Si no está definida, la aplicación arranca igual pero el log muestra `No se creó el administrador`.
+
+- Solo se crea una vez: cambiar `ADMIN_PASSWORD` después **no** cambia la contraseña del administrador.
+- El correo `admin@codelibrary.com` y el DNI `00000000` están reservados: nadie puede registrarse con ellos.
+
+### 4. Compilar el Proyecto
 Ejecuta el siguiente comando en la terminal:
 ```bash
 ./mvnw clean compile
 ```
 *(En Windows puedes usar `mvnw.cmd clean compile`)*
 
-### 4. Ejecutar la Aplicación
+### 5. Ejecutar la Aplicación
 Para iniciar el servidor de desarrollo local:
 ```bash
 ./mvnw spring-boot:run
 ```
 
 La aplicación estará disponible en tu navegador en:
-`http://localhost:8080`
+`http://localhost:8081`
 
 ---
 

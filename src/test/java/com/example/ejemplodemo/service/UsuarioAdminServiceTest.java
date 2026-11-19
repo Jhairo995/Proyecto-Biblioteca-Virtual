@@ -58,7 +58,7 @@ class UsuarioAdminServiceTest {
     private static Usuario usuario(Long id, TipoAcceso acceso) {
         Usuario usuario = new Usuario();
         usuario.setId(id);
-        usuario.setNombre("Usuario " + id);
+        usuario.setNombre("Usuario de Prueba");
         usuario.setCorreo("usuario" + id + "@correo.com");
         usuario.setDni(String.format("%08d", 10000000 + id));
         usuario.setContrasena("HASH-ANTERIOR");

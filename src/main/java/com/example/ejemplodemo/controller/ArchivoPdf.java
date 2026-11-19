@@ -7,12 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 // Respuesta HTTP para mostrar un PDF dentro del navegador
-final class ArchivoPdf {
+public final class ArchivoPdf {
 
     private ArchivoPdf() {
     }
 
-    static ResponseEntity<Resource> enLinea(Resource archivo, Long idLibro) {
+    public static ResponseEntity<Resource> enLinea(Resource archivo, Long idLibro) {
         ContentDisposition disposicion = ContentDisposition.inline()
                 .filename("libro-" + idLibro + ".pdf")
                 .build();

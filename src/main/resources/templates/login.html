@@ -17,6 +17,7 @@
 
     <div th:if="${param.error}" class="alert alert-danger small py-2">Correo o contraseña incorrectos.</div>
     <div th:if="${param.logout}" class="alert alert-success small py-2">Sesión cerrada correctamente.</div>
+    <div th:if="${param.expirada}" class="alert alert-warning small py-2">Tu cuenta fue modificada por un administrador. Vuelve a iniciar sesión.</div>
 
     <!-- Pestañas Login / Registro -->
     <ul class="nav nav-pills nav-fill mb-4 bg-light rounded-pill p-1" id="authTabs" role="tablist">
@@ -52,7 +53,7 @@
             <form id="formRegistro">
                 <div class="mb-3">
                     <label class="form-label small fw-semibold" for="regNombre">Nombre completo</label>
-                    <input type="text" class="form-control" id="regNombre" required>
+                    <input type="text" class="form-control" id="regNombre" required minlength="2" maxlength="100">
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-semibold" for="regDni">DNI</label>

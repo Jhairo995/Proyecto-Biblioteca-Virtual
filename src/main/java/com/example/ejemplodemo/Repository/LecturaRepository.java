@@ -15,4 +15,10 @@ public interface LecturaRepository extends JpaRepository<Lectura, Long> {
     boolean existsByLectorAndLibro(Usuario lector, Libro libro);
 
     void deleteByLectorAndLibro(Usuario lector, Libro libro);
+
+    long countByLector(Usuario lector);
+
+    void deleteByLector(Usuario lector);
+
+    void deleteByLibro(Libro libro);
 }

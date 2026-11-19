@@ -1,5 +1,7 @@
 package com.example.ejemplodemo.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -22,6 +24,7 @@ import java.util.UUID;
 @Service
 public class AlmacenamientoService {
 
+    private static final Logger log = LoggerFactory.getLogger(AlmacenamientoService.class);
     private static final byte[] FIRMA_PDF = "%PDF".getBytes(StandardCharsets.US_ASCII);
     private static final String EXTENSION_PDF = ".pdf";
 
@@ -58,6 +61,23 @@ public class AlmacenamientoService {
             return nombreGuardado;
         } catch (IOException e) {
             throw new UncheckedIOException("No se pudo guardar el archivo del libro.", e);
+        }
+    }
+
+    // Borra un PDF guardado; un fallo solo se registra para no interrumpir la operación que lo pidió
+    public void eliminar(String nombreArchivo) {
+        if (nombreArchivo == null || nombreArchivo.isBlank()) {
+            return;
+        }
+        Path ruta = directorio.resolve(nombreArchivo).normalize();
+        if (!ruta.startsWith(directorio)) {
+            log.warn("Se ignoró la eliminación de un archivo fuera del directorio de libros: {}", nombreArchivo);
+            return;
+        }
+        try {
+            Files.deleteIfExists(ruta);
+        } catch (IOException e) {
+            log.warn("No se pudo eliminar el archivo {}", ruta, e);
         }
     }
 

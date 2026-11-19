@@ -50,7 +50,9 @@ class LectorServiceTest {
         Libro libro = new Libro();
         libro.setId(id);
         libro.setTitulo("Libro " + id);
-        libro.setCategoria("Java");
+        Categoria categoria = new Categoria();
+        categoria.setNombre("Java");
+        libro.setCategoria(categoria);
         libro.setNivelAcceso(acceso);
         libro.setEstado(estado);
         return libro;

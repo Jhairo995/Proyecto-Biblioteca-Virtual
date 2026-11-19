@@ -39,7 +39,7 @@
                     <div class="book-cover" th:classappend="${libro.portada}" th:text="${libro.titulo}">Título</div>
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex flex-wrap gap-2">
-                            <span class="badge badge-soft" th:text="${libro.categoria}">Categoría</span>
+                            <span class="badge badge-soft" th:text="${libro.categoria?.nombre}">Categoría</span>
                             <span th:if="${libro.nivelAcceso.name() == 'PREMIUM'}" class="badge rounded-pill text-bg-warning"><i class="bi bi-stars"></i> Premium</span>
                         </div>
                         <h5 class="card-title mt-2 flex-grow-1" th:text="${libro.titulo}">Título</h5>
@@ -73,7 +73,7 @@
                     <div class="book-cover" th:classappend="${libro.portada}" th:text="${libro.titulo}">Título</div>
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex flex-wrap gap-2">
-                            <span class="badge badge-soft" th:text="${libro.categoria}">Categoría</span>
+                            <span class="badge badge-soft" th:text="${libro.categoria?.nombre}">Categoría</span>
                             <span th:if="${libro.nivelAcceso.name() == 'PREMIUM'}" class="badge rounded-pill text-bg-warning"><i class="bi bi-stars"></i> Premium</span>
                         </div>
                         <h5 class="card-title mt-2" th:text="${libro.titulo}">Título</h5>

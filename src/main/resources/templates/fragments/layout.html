@@ -60,9 +60,9 @@
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
                             <span class="dropdown-item-text small text-muted"
-                                  th:text="${usuarioActual.rol.name() + ' · ' + usuarioActual.nivelCuenta.name()}">LECTOR · GRATUITO</span>
+                                  th:text="${(usuarioActual.rol?.nombre ?: 'Sin rol') + ' · ' + usuarioActual.nivelCuenta.name()}">Lector · GRATUITO</span>
                         </li>
-                        <li><a class="dropdown-item" th:href="@{${usuarioActual.rol.panel}}"><i class="bi bi-speedometer2"></i> Mi panel</a></li>
+                        <li><a class="dropdown-item" th:href="@{${usuarioActual.acceso.panel}}"><i class="bi bi-speedometer2"></i> Mi panel</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form th:action="@{/logout}" method="post">
@@ -103,7 +103,7 @@
         <div class="book-cover" th:classappend="${libro.portada}" th:text="${libro.titulo}">Título</div>
         <div class="card-body d-flex flex-column">
             <div class="d-flex flex-wrap gap-2">
-                <span class="badge badge-soft" th:text="${libro.categoria}">Categoría</span>
+                <span class="badge badge-soft" th:text="${libro.categoria?.nombre}">Categoría</span>
                 <span th:if="${libro.nivelAcceso.name() == 'PREMIUM'}" class="badge rounded-pill text-bg-warning">
                     <i class="bi bi-stars"></i> Premium
                 </span>
@@ -114,7 +114,7 @@
                 <i class="bi bi-pen"></i> <span th:text="${libro.escritor.nombre}">Escritor</span>
             </small>
             <!-- Solo los lectores (o visitantes, que irán al login) pueden abrir el visor -->
-            <a th:if="${usuarioActual == null or usuarioActual.rol.name() == 'LECTOR'}"
+            <a th:if="${usuarioActual == null or usuarioActual.acceso.name() == 'LECTOR'}"
                th:href="@{/lector/libros/{id}/leer(id=${libro.id})}" class="btn btn-sm btn-primary mt-3">
                 <i class="bi bi-book"></i> Leer
             </a>
@@ -122,44 +122,15 @@
     </div>
 </div>
 
-<!-- Grilla de categorías -->
+<!-- Grilla de categorías (administradas desde el panel; solo se muestran las activas) -->
 <div th:fragment="categorias" class="row g-4">
-    <div class="col-12 col-sm-6 col-lg-3">
+    <p th:if="${#lists.isEmpty(categorias)}" class="col-12 text-center text-muted">Pronto agregaremos nuevas categorías.</p>
+    <div class="col-12 col-sm-6 col-lg-3" th:each="categoria : ${categorias}">
         <div class="card category-card h-100 reveal">
             <div class="card-body text-center p-4">
-                <span class="category-icon"><i class="bi bi-globe"></i></span>
-                <h5 class="mt-4">Desarrollo Web</h5>
-                <p class="text-muted">HTML, CSS, JavaScript, React, Node.js y más.</p>
-                <a th:href="@{/catalogo}" class="btn btn-sm btn-outline-primary">Ver recursos</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card category-card h-100 reveal">
-            <div class="card-body text-center p-4">
-                <span class="category-icon"><i class="bi bi-filetype-java"></i></span>
-                <h5 class="mt-4">Java</h5>
-                <p class="text-muted">Programación orientada a objetos, Spring y desarrollo empresarial.</p>
-                <a th:href="@{/catalogo}" class="btn btn-sm btn-outline-primary">Ver recursos</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card category-card h-100 reveal">
-            <div class="card-body text-center p-4">
-                <span class="category-icon"><i class="bi bi-database"></i></span>
-                <h5 class="mt-4">Bases de Datos</h5>
-                <p class="text-muted">MySQL, PostgreSQL, SQL Server, MongoDB y más.</p>
-                <a th:href="@{/catalogo}" class="btn btn-sm btn-outline-primary">Ver recursos</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-sm-6 col-lg-3">
-        <div class="card category-card h-100 reveal">
-            <div class="card-body text-center p-4">
-                <span class="category-icon"><i class="bi bi-robot"></i></span>
-                <h5 class="mt-4">IA y Machine Learning</h5>
-                <p class="text-muted">Python, inteligencia artificial, datos y aprendizaje automático.</p>
+                <span class="category-icon"><i class="bi" th:classappend="${categoria.icono}"></i></span>
+                <h5 class="mt-4" th:text="${categoria.nombre}">Categoría</h5>
+                <p class="text-muted" th:text="${categoria.descripcion}">Descripción</p>
                 <a th:href="@{/catalogo}" class="btn btn-sm btn-outline-primary">Ver recursos</a>
             </div>
         </div>
@@ -202,7 +173,7 @@
                     <li class="mb-3"><i class="bi bi-check-circle-fill text-success"></i> Cursos y tutoriales</li>
                 </ul>
                 <!-- Lector gratuito en sesión: activa Premium (pago simulado) -->
-                <form th:if="${usuarioActual != null and usuarioActual.rol.name() == 'LECTOR' and usuarioActual.nivelCuenta.name() == 'GRATUITO'}"
+                <form th:if="${usuarioActual != null and usuarioActual.acceso.name() == 'LECTOR' and usuarioActual.nivelCuenta.name() == 'GRATUITO'}"
                       th:action="@{/lector/premium}" method="post">
                     <button type="submit" class="btn btn-primary w-100">Suscribirme ahora</button>
                 </form>

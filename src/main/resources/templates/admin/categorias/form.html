@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head(${categoria == null} ? 'Nueva categoría' : 'Editar categoría')}"></head>
+
+<body class="admin-body">
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('categorias')}"></aside>
+
+    <main class="admin-main" th:with="esNuevo=${categoria == null}">
+        <header th:replace="~{fragments/admin :: topbar(${categoria == null} ? 'Nueva categoría' : 'Editar categoría',
+                ${categoria == null} ? 'Define el nombre, el ícono y el color de portada.' : ${categoria.nombre})}"></header>
+
+        <div class="admin-content">
+            <a th:href="@{/admin/categorias}" class="btn btn-sm btn-light mb-3"><i class="bi bi-arrow-left"></i> Volver a categorías</a>
+
+            <form th:action="${esNuevo} ? @{/admin/categorias} : @{/admin/categorias/{id}(id=${categoria.id})}" th:object="${form}"
+                  method="post" class="needs-validation" novalidate>
+                <div th:replace="~{fragments/admin :: erroresGenerales}"></div>
+
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <section class="admin-card p-4">
+                            <h2 class="form-section-title"><i class="bi bi-tag"></i> Datos de la categoría</h2>
+
+                            <div class="mb-3">
+                                <label class="form-label campo-requerido" for="nombre">Nombre</label>
+                                <input type="text" class="form-control" th:field="*{nombre}" th:errorclass="is-invalid"
+                                       required minlength="2" maxlength="60" pattern="[\p{L}0-9 .,&amp;+#\(\)\/'\-]+"
+                                       placeholder="Ej: Desarrollo Móvil">
+                                <div th:replace="~{fragments/admin :: feedback('nombre', 'Ingresa un nombre de 2 a 60 caracteres sin símbolos especiales.')}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="descripcion">
+                                    Descripción <span class="char-counter" id="contadorDescripcion"></span>
+                                </label>
+                                <textarea class="form-control" th:field="*{descripcion}" th:errorclass="is-invalid" rows="3"
+                                          maxlength="255" data-contador="contadorDescripcion"
+                                          placeholder="Temas que agrupa esta categoría"></textarea>
+                                <div th:replace="~{fragments/admin :: feedback('descripcion', 'La descripción admite como máximo 255 caracteres.')}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label campo-requerido" for="icono">Ícono</label>
+                                <div class="input-group has-validation">
+                                    <span class="input-group-text"><i class="bi bi-bootstrap" aria-hidden="true"></i></span>
+                                    <input type="text" class="form-control font-monospace" th:field="*{icono}" th:errorclass="is-invalid"
+                                           required maxlength="40" pattern="bi-[a-z0-9]+(-[a-z0-9]+)*" list="iconosSugeridos"
+                                           autocomplete="off" spellcheck="false">
+                                    <div th:replace="~{fragments/admin :: feedback('icono', 'Usa el nombre de un ícono de Bootstrap Icons, por ejemplo: bi-database.')}"></div>
+                                </div>
+                                <datalist id="iconosSugeridos">
+                                    <option value="bi-globe"></option>
+                                    <option value="bi-filetype-java"></option>
+                                    <option value="bi-filetype-py"></option>
+                                    <option value="bi-database"></option>
+                                    <option value="bi-robot"></option>
+                                    <option value="bi-phone"></option>
+                                    <option value="bi-cloud"></option>
+                                    <option value="bi-shield-lock"></option>
+                                    <option value="bi-cpu"></option>
+                                    <option value="bi-git"></option>
+                                    <option value="bi-terminal"></option>
+                                    <option value="bi-controller"></option>
+                                    <option value="bi-graph-up"></option>
+                                    <option value="bi-palette"></option>
+                                    <option value="bi-grid"></option>
+                                </datalist>
+                                <div class="form-text">
+                                    Escribe el nombre completo (con el prefijo <code>bi-</code>). Consulta la lista en
+                                    <a href="https://icons.getbootstrap.com/" target="_blank" rel="noopener">Bootstrap Icons</a>.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="form-label d-block campo-requerido">Color de portada</span>
+                                <div class="swatch-group" role="radiogroup" aria-label="Color de portada">
+                                    <th:block th:each="col : ${colores}">
+                                        <input type="radio" class="btn-check" th:field="*{color}" th:value="${col}"
+                                               th:attr="data-clase=${col.clase}" required>
+                                        <label class="swatch" th:classappend="${col.clase}" th:for="${#ids.prev('color')}"
+                                               th:title="${col.etiqueta}"><span class="visually-hidden" th:text="${col.etiqueta}">Color</span></label>
+                                    </th:block>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('color')}" th:errors="*{color}">Error</div>
+                            </div>
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="activa" name="activa" value="true" th:checked="*{activa}">
+                                <input type="hidden" name="_activa" value="on">
+                                <label class="form-check-label" for="activa">Categoría activa (visible en el sitio y disponible para libros nuevos)</label>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="preview-card">
+                            <section class="admin-card entity-card mb-3" id="vistaPreviaCategoria" aria-live="polite">
+                                <div class="categoria-cover" th:classappend="*{color != null} ? *{color.clase} : 'cover-cyan'">
+                                    <i class="bi" data-preview-icono th:classappend="*{icono}"></i>
+                                    <h3 data-preview-nombre th:text="*{nombre} ?: 'Nombre de la categoría'">Nombre</h3>
+                                </div>
+                                <div class="entity-body">
+                                    <span class="form-label d-block text-muted small mb-1">Vista previa</span>
+                                    <p class="text-muted small mb-0" data-preview-descripcion th:text="*{descripcion} ?: 'La descripción aparecerá aquí.'">Descripción</p>
+                                </div>
+                            </section>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check2-circle"></i>
+                                    <span th:text="${esNuevo} ? 'Crear categoría' : 'Guardar cambios'">Guardar</span>
+                                </button>
+                                <a th:href="@{/admin/categorias}" class="btn btn-light">Cancelar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<th:block th:replace="~{fragments/admin :: scripts}"></th:block>
+</body>
+</html>

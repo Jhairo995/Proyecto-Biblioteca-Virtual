@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head(${usuario == null} ? 'Nuevo usuario' : 'Editar usuario')}"></head>
+
+<body class="admin-body">
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('usuarios')}"></aside>
+
+    <main class="admin-main" th:with="esNuevo=${usuario == null}, esPropio=${usuario != null and usuarioActual != null and usuario.id == usuarioActual.id}">
+        <header th:replace="~{fragments/admin :: topbar(${usuario == null} ? 'Nuevo usuario' : 'Editar usuario',
+                ${usuario == null} ? 'Crea una cuenta y asígnale un rol.' : ${usuario.nombre})}"></header>
+
+        <div class="admin-content">
+            <a th:href="${esNuevo} ? @{/admin/usuarios} : @{/admin/usuarios/{id}(id=${usuario.id})}" class="btn btn-sm btn-light mb-3">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+
+            <form th:action="${esNuevo} ? @{/admin/usuarios} : @{/admin/usuarios/{id}(id=${usuario.id})}" th:object="${form}"
+                  method="post" class="needs-validation" novalidate>
+                <div th:replace="~{fragments/admin :: erroresGenerales}"></div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <section class="admin-card p-4 mb-4">
+                            <h2 class="form-section-title"><i class="bi bi-person"></i> Datos personales</h2>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label campo-requerido" for="nombre">Nombre completo</label>
+                                    <input type="text" class="form-control" th:field="*{nombre}" th:errorclass="is-invalid"
+                                           required minlength="2" maxlength="100" pattern="[\p{L} .'\-]+" autocomplete="name"
+                                           placeholder="Ej: Ana Torres">
+                                    <div th:replace="~{fragments/admin :: feedback('nombre', 'Ingresa un nombre de 2 a 100 caracteres (solo letras, espacios, apóstrofos y guiones).')}"></div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <label class="form-label campo-requerido" for="dni">DNI</label>
+                                    <input type="text" class="form-control font-monospace" th:field="*{dni}" th:errorclass="is-invalid"
+                                           required pattern="\d{8}" maxlength="8" inputmode="numeric" placeholder="8 dígitos">
+                                    <div th:replace="~{fragments/admin :: feedback('dni', 'El DNI debe tener exactamente 8 dígitos.')}"></div>
+                                </div>
+                                <div class="col-sm-7">
+                                    <label class="form-label campo-requerido" for="correo">Correo electrónico</label>
+                                    <input type="email" class="form-control" th:field="*{correo}" th:errorclass="is-invalid"
+                                           required maxlength="120" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" autocomplete="email"
+                                           th:readonly="${esPropio}"
+                                           placeholder="usuario@correo.com">
+                                    <div th:replace="~{fragments/admin :: feedback('correo', 'Ingresa un correo electrónico válido.')}"></div>
+                                    <div th:if="${esPropio}" class="form-text">No puedes cambiar tu propio correo mientras tienes la sesión iniciada.</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="admin-card p-4">
+                            <h2 class="form-section-title"><i class="bi bi-key"></i> Contraseña</h2>
+                            <p th:unless="${esNuevo}" class="form-text mt-n2 mb-3">Déjala en blanco para conservar la contraseña actual.</p>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label" th:classappend="${esNuevo} ? 'campo-requerido'" for="contrasena">
+                                        <span th:text="${esNuevo} ? 'Contraseña' : 'Nueva contraseña'">Contraseña</span>
+                                    </label>
+                                    <input type="password" class="form-control" id="contrasena" name="contrasena"
+                                           th:classappend="${#fields.hasErrors('contrasena')} ? 'is-invalid'"
+                                           th:required="${esNuevo}" minlength="6" maxlength="72" autocomplete="new-password">
+                                    <div th:replace="~{fragments/admin :: feedback('contrasena', 'La contraseña debe tener entre 6 y 72 caracteres.')}"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" th:classappend="${esNuevo} ? 'campo-requerido'" for="confirmacion">Confirmar contraseña</label>
+                                    <input type="password" class="form-control" id="confirmacion" name="confirmacion" data-confirma="contrasena"
+                                           th:classappend="${#fields.hasErrors('confirmacion')} ? 'is-invalid'"
+                                           th:required="${esNuevo}" maxlength="72" autocomplete="new-password">
+                                    <div th:replace="~{fragments/admin :: feedback('confirmacion', 'Las contraseñas no coinciden.')}"></div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <section class="admin-card p-4 mb-4">
+                            <h2 class="form-section-title"><i class="bi bi-shield-lock"></i> Acceso</h2>
+
+                            <div class="mb-3">
+                                <label class="form-label campo-requerido" for="rolId">Rol</label>
+                                <select class="form-select" th:field="*{rolId}" th:errorclass="is-invalid" required>
+                                    <option value="">Selecciona un rol</option>
+                                    <option th:each="r : ${roles}" th:value="${r.id}"
+                                            th:text="${r.nombre + ' · acceso ' + r.acceso.etiqueta.toLowerCase()}">Rol</option>
+                                </select>
+                                <div th:replace="~{fragments/admin :: feedback('rolId', 'Selecciona un rol.')}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="form-label d-block campo-requerido">Plan de la cuenta</span>
+                                <div class="btn-group w-100" role="group" aria-label="Plan de la cuenta">
+                                    <th:block th:each="n : ${niveles}">
+                                        <input type="radio" class="btn-check" th:field="*{nivelCuenta}" th:value="${n}" required>
+                                        <label class="btn btn-outline-primary" th:for="${#ids.prev('nivelCuenta')}">
+                                            <i class="bi" th:classappend="${n.name() == 'PREMIUM'} ? 'bi-stars' : 'bi-unlock'"></i>
+                                            <span th:text="${n.name() == 'PREMIUM'} ? 'Premium' : 'Gratuito'">Plan</span>
+                                        </label>
+                                    </th:block>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('nivelCuenta')}" th:errors="*{nivelCuenta}">Error</div>
+                            </div>
+
+                            <div class="form-check form-switch">
+                                <th:block th:if="${esPropio}">
+                                    <input type="hidden" name="activo" value="true">
+                                    <input class="form-check-input" type="checkbox" id="activoVisual" checked disabled>
+                                    <label class="form-check-label" for="activoVisual">Cuenta activa</label>
+                                    <div class="form-text">No puedes desactivar tu propia cuenta.</div>
+                                </th:block>
+                                <th:block th:unless="${esPropio}">
+                                    <input class="form-check-input" type="checkbox" id="activo" name="activo" value="true"
+                                           th:checked="*{activo}" th:classappend="${#fields.hasErrors('activo')} ? 'is-invalid'">
+                                    <input type="hidden" name="_activo" value="on">
+                                    <label class="form-check-label" for="activo">Cuenta activa (puede iniciar sesión)</label>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('activo')}" th:errors="*{activo}">Error</div>
+                                </th:block>
+                            </div>
+                        </section>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2-circle"></i>
+                                <span th:text="${esNuevo} ? 'Crear usuario' : 'Guardar cambios'">Guardar</span>
+                            </button>
+                            <a th:href="${esNuevo} ? @{/admin/usuarios} : @{/admin/usuarios/{id}(id=${usuario.id})}" class="btn btn-light">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<th:block th:replace="~{fragments/admin :: scripts}"></th:block>
+</body>
+</html>

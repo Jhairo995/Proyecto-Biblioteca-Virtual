@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('Roles')}"></head>
+
+<body class="admin-body">
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('roles')}"></aside>
+
+    <main class="admin-main">
+        <header th:replace="~{fragments/admin :: topbar('Roles', 'Define los roles que se asignan a los usuarios y qué nivel de acceso otorgan.')}"></header>
+
+        <div class="admin-content">
+            <div th:replace="~{fragments/admin :: alertas}"></div>
+
+            <div class="admin-page-head">
+                <p class="mb-0 text-muted">
+                    Cada rol otorga uno de los tres niveles de acceso: <strong>lector</strong>, <strong>escritor</strong> o <strong>administrador</strong>.
+                </p>
+                <a th:href="@{/admin/roles/nuevo}" class="btn btn-primary"><i class="bi bi-shield-plus"></i> Nuevo rol</a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-xl-4" th:each="r : ${roles}" th:with="cantidad=${usuariosPorRol[r.id] ?: 0}">
+                    <article class="admin-card entity-card">
+                        <div class="entity-body">
+                            <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                                <h2 class="h5 fw-bold mb-0" th:text="${r.nombre}">Rol</h2>
+                                <span th:if="${r.sistema}" class="badge-sistema" title="Rol creado por el sistema">Sistema</span>
+                            </div>
+                            <span class="acceso-badge mb-3" th:classappend="${'acceso-' + #strings.toLowerCase(r.acceso.name())}">
+                                <i class="bi bi-key"></i>
+                                <span th:text="|Acceso ${r.acceso.etiqueta.toLowerCase()} · ${r.acceso.panel}|">Acceso</span>
+                            </span>
+                            <p class="text-muted small mb-0 mt-2" th:text="${r.descripcion ?: 'Sin descripción.'}">Descripción</p>
+                        </div>
+                        <div class="entity-footer">
+                            <a th:href="@{/admin/usuarios(rol=${r.id})}" class="small fw-semibold text-decoration-none">
+                                <i class="bi bi-people"></i> <span th:text="|${cantidad} usuario(s)|">0 usuarios</span>
+                            </a>
+                            <div class="acciones">
+                                <a th:href="@{/admin/roles/{id}/editar(id=${r.id})}" class="btn btn-icon btn-outline-primary" title="Editar" aria-label="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button th:if="${!r.sistema and cantidad == 0}" type="button" class="btn btn-icon btn-outline-danger"
+                                        data-bs-toggle="modal" data-bs-target="#modalEliminar" title="Eliminar" aria-label="Eliminar"
+                                        th:attr="data-accion=@{/admin/roles/{id}/eliminar(id=${r.id})},data-nombre=${r.nombre}">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                                <span th:unless="${!r.sistema and cantidad == 0}" class="d-inline-block" tabindex="0"
+                                      th:title="${r.sistema} ? 'Los roles del sistema no se pueden eliminar' : 'Reasigna sus usuarios para poder eliminarlo'">
+                                    <button type="button" class="btn btn-icon btn-outline-secondary" disabled aria-label="Eliminar (no disponible)">
+                                        <i class="bi bi-lock"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/admin :: modalEliminar}"></div>
+<th:block th:replace="~{fragments/admin :: scripts}"></th:block>
+</body>
+</html>

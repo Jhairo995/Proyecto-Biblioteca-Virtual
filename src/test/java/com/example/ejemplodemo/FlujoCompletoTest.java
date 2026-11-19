@@ -1,5 +1,6 @@
 package com.example.ejemplodemo;
 
+import com.example.ejemplodemo.Repository.CategoriaRepository;
 import com.example.ejemplodemo.Repository.LibroRepository;
 import com.example.ejemplodemo.model.Libro;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,9 @@ class FlujoCompletoTest {
 
     @Autowired
     private LibroRepository libroRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     @Test
     @DisplayName("Las páginas públicas cargan sin iniciar sesión")
@@ -90,7 +94,7 @@ class FlujoCompletoTest {
         mockMvc.perform(multipart("/escritor/libros").file(pdf).session(escritor)
                         .param("titulo", TITULO)
                         .param("descripcion", "Descripcion de prueba")
-                        .param("categoria", "Java")
+                        .param("categoria", idCategoria("Java"))
                         .param("idioma", "Español")
                         .param("nivelAcceso", "GRATUITO"))
                 .andExpect(redirectedUrl("/escritor"));
@@ -152,6 +156,11 @@ class FlujoCompletoTest {
     void loginInvalido() throws Exception {
         mockMvc.perform(post("/login").param("correo", "nadie@correo.com").param("contrasena", "incorrecta"))
                 .andExpect(redirectedUrl("/login?error"));
+    }
+
+    // Las categorías iniciales las crea DatosIniciales al arrancar
+    private String idCategoria(String nombre) {
+        return String.valueOf(categoriaRepository.findByNombreIgnoreCase(nombre).orElseThrow().getId());
     }
 
     private void registrar(String nombre, String dni, String correo, String rol) throws Exception {

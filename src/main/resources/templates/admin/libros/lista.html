@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('Libros')}"></head>
+
+<body class="admin-body">
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('libros')}"></aside>
+
+    <main class="admin-main">
+        <header th:replace="~{fragments/admin :: topbar('Libros', 'Revisa, publica, edita o retira los libros del catálogo.')}"></header>
+
+        <div class="admin-content">
+            <div th:replace="~{fragments/admin :: alertas}"></div>
+
+            <div class="admin-page-head">
+                <p class="mb-0 text-muted" th:text="|${pagina.totalElements} libro(s) encontrado(s)|">0 libros</p>
+                <a th:href="@{/admin/libros/nuevo}" class="btn btn-primary"><i class="bi bi-journal-plus"></i> Registrar libro</a>
+            </div>
+
+            <section class="admin-card">
+                <form id="filtros" class="admin-toolbar border-bottom" th:action="@{/admin/libros}" method="get" role="search" data-autoenvio>
+                    <div class="input-icon flex-grow-1">
+                        <i class="bi bi-search"></i>
+                        <input type="search" name="q" class="form-control" th:value="${q}" maxlength="100"
+                               placeholder="Buscar por título" aria-label="Buscar libros">
+                    </div>
+                    <select name="estado" class="form-select" aria-label="Filtrar por estado">
+                        <option value="">Todos los estados</option>
+                        <option th:each="e : ${estados}" th:value="${e}" th:selected="${e == estadoFiltro}"
+                                th:text="${e.name() == 'APROBADO'} ? 'Publicados' : (${e.name() == 'PENDIENTE'} ? 'En revisión' : 'Rechazados')">Estado</option>
+                    </select>
+                    <select name="categoria" class="form-select" aria-label="Filtrar por categoría">
+                        <option value="">Todas las categorías</option>
+                        <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}" th:selected="${c.id == categoriaFiltro}">Categoría</option>
+                    </select>
+                    <button type="submit" class="btn btn-outline-primary"><i class="bi bi-funnel"></i> Filtrar</button>
+                    <a th:if="${q != null or estadoFiltro != null or categoriaFiltro != null}" th:href="@{/admin/libros}" class="btn btn-light">Limpiar</a>
+                </form>
+
+                <div th:if="${pagina.empty}" class="empty-state">
+                    <i class="bi bi-journal-x"></i>
+                    No se encontraron libros con esos filtros.
+                </div>
+
+                <div th:unless="${pagina.empty}" class="table-responsive">
+                    <table class="table admin-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Libro</th>
+                                <th>Escritor</th>
+                                <th>Acceso</th>
+                                <th>Estado</th>
+                                <th>Registrado</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="libro : ${pagina.content}">
+                                <td>
+                                    <div class="cell-main">
+                                        <span class="cover-chip" th:classappend="${libro.portada}">
+                                            <i class="bi" th:classappend="${libro.categoria?.icono ?: 'bi-book'}"></i>
+                                        </span>
+                                        <span>
+                                            <strong th:text="${libro.titulo}">Título</strong>
+                                            <small th:text="${(libro.categoria?.nombre ?: 'Sin categoría') + (libro.idioma != null ? ' · ' + libro.idioma : '')}">Categoría</small>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a th:if="${libro.escritor != null}" th:href="@{/admin/usuarios/{id}(id=${libro.escritor.id})}"
+                                       class="text-decoration-none" th:text="${libro.escritor.nombre}">Escritor</a>
+                                    <span th:if="${libro.escritor == null}" class="text-muted small">Biblioteca</span>
+                                </td>
+                                <td>
+                                    <span th:if="${libro.nivelAcceso.name() == 'PREMIUM'}" class="badge rounded-pill text-bg-warning"><i class="bi bi-stars"></i> Premium</span>
+                                    <span th:unless="${libro.nivelAcceso.name() == 'PREMIUM'}" class="badge badge-soft">Gratuito</span>
+                                </td>
+                                <td>
+                                    <span class="estado-badge" th:classappend="${'estado-' + #strings.toLowerCase(libro.estado.name())}"
+                                          th:text="${libro.estado.name() == 'APROBADO'} ? 'Publicado' : (${libro.estado.name() == 'PENDIENTE'} ? 'En revisión' : 'Rechazado')">Estado</span>
+                                </td>
+                                <td class="text-nowrap" th:text="${#temporals.format(libro.fechaRegistro, 'dd/MM/yyyy')}">fecha</td>
+                                <td class="text-end">
+                                    <div class="acciones">
+                                        <a th:href="@{/admin/libros/{id}/archivo(id=${libro.id})}" target="_blank" rel="noopener"
+                                           class="btn btn-icon btn-light" title="Ver PDF" aria-label="Ver PDF">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </a>
+                                        <form th:if="${libro.estado.name() != 'APROBADO'}" th:action="@{/admin/libros/{id}/aprobar(id=${libro.id})}" method="post">
+                                            <input type="hidden" name="volver" value="libros">
+                                            <button type="submit" class="btn btn-icon btn-outline-success" title="Aprobar y publicar" aria-label="Aprobar y publicar">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                        </form>
+                                        <form th:if="${libro.estado.name() != 'RECHAZADO'}" th:action="@{/admin/libros/{id}/rechazar(id=${libro.id})}" method="post">
+                                            <input type="hidden" name="volver" value="libros">
+                                            <button type="submit" class="btn btn-icon btn-outline-warning"
+                                                    th:title="${libro.estado.name() == 'APROBADO'} ? 'Retirar del catálogo' : 'Rechazar'"
+                                                    th:aria-label="${libro.estado.name() == 'APROBADO'} ? 'Retirar del catálogo' : 'Rechazar'">
+                                                <i class="bi" th:classappend="${libro.estado.name() == 'APROBADO'} ? 'bi-eye-slash' : 'bi-x-lg'"></i>
+                                            </button>
+                                        </form>
+                                        <a th:href="@{/admin/libros/{id}/editar(id=${libro.id})}" class="btn btn-icon btn-outline-primary" title="Editar" aria-label="Editar">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-icon btn-outline-danger"
+                                                data-bs-toggle="modal" data-bs-target="#modalEliminar" title="Eliminar" aria-label="Eliminar"
+                                                th:attr="data-accion=@{/admin/libros/{id}/eliminar(id=${libro.id})},data-nombre=${libro.titulo},data-detalle='Se eliminarán el libro, su archivo PDF y su presencia en las listas de lectura.'">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <nav th:replace="~{fragments/admin :: paginacion(${pagina})}"></nav>
+            </section>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/admin :: modalEliminar}"></div>
+<th:block th:replace="~{fragments/admin :: scripts}"></th:block>
+</body>
+</html>

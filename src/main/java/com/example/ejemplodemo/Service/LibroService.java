@@ -1,6 +1,7 @@
 package com.example.ejemplodemo.Service;
 
 import com.example.ejemplodemo.Repository.LibroRepository;
+import com.example.ejemplodemo.dto.LibroForm;
 import com.example.ejemplodemo.model.EstadoLibro;
 import com.example.ejemplodemo.model.Libro;
 import com.example.ejemplodemo.model.NivelCuenta;
@@ -13,36 +14,47 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class LibroService {
 
+    static final Pattern PATRON_IDIOMA = Pattern.compile(LibroForm.PATRON_IDIOMA);
+    static final String MENSAJE_IDIOMA = "El idioma solo admite letras y espacios.";
+
     private final LibroRepository libroRepository;
     private final AlmacenamientoService almacenamientoService;
+    private final CategoriaService categoriaService;
 
-    public LibroService(LibroRepository libroRepository, AlmacenamientoService almacenamientoService) {
+    public LibroService(LibroRepository libroRepository,
+                        AlmacenamientoService almacenamientoService,
+                        CategoriaService categoriaService) {
         this.libroRepository = libroRepository;
         this.almacenamientoService = almacenamientoService;
+        this.categoriaService = categoriaService;
     }
 
     // Datos que el escritor envía desde el formulario de publicación
-    public record DatosLibro(String titulo, String descripcion, String categoria, String idioma, NivelCuenta nivelAcceso) {
+    public record DatosLibro(String titulo, String descripcion, Long categoriaId, String idioma, NivelCuenta nivelAcceso) {
     }
 
     // El libro queda PENDIENTE hasta que un administrador lo revise
     public Libro registrarLibro(DatosLibro datos, MultipartFile archivo, Usuario escritor) {
-        if (datos.titulo() == null || datos.titulo().isBlank()) {
-            throw new IllegalArgumentException("El título es obligatorio.");
-        }
-        if (datos.categoria() == null || datos.categoria().isBlank()) {
+        String titulo = Textos.obligatorio(datos.titulo(), "titulo", "El título es obligatorio.");
+        Textos.longitudMaxima(titulo, LibroForm.TITULO_MAX, "titulo", "El título admite como máximo 200 caracteres.");
+        Textos.longitudMaxima(datos.descripcion(), LibroForm.DESCRIPCION_MAX, "descripcion",
+                "La descripción admite como máximo 1000 caracteres.");
+        Textos.longitudMaxima(datos.idioma(), LibroForm.IDIOMA_MAX, "idioma", "El idioma admite como máximo 50 caracteres.");
+        Textos.formato(datos.idioma(), PATRON_IDIOMA, "idioma", MENSAJE_IDIOMA);
+        if (datos.categoriaId() == null) {
             throw new IllegalArgumentException("La categoría es obligatoria.");
         }
 
         Libro libro = new Libro();
-        libro.setTitulo(datos.titulo().trim());
-        libro.setDescripcion(datos.descripcion() == null ? null : datos.descripcion().trim());
-        libro.setCategoria(datos.categoria().trim());
-        libro.setIdioma(datos.idioma() == null ? null : datos.idioma().trim());
+        libro.setTitulo(titulo);
+        libro.setDescripcion(Textos.limpiar(datos.descripcion()));
+        libro.setCategoria(categoriaService.paraLibro(datos.categoriaId(), null));
+        libro.setIdioma(Textos.limpiar(datos.idioma()));
         libro.setNivelAcceso(datos.nivelAcceso() == null ? NivelCuenta.GRATUITO : datos.nivelAcceso());
         libro.setEstado(EstadoLibro.PENDIENTE);
         libro.setEscritor(escritor);
@@ -55,12 +67,21 @@ public class LibroService {
         return libroRepository.findByEscritorOrderByFechaRegistroDesc(escritor);
     }
 
+    // Los más recientes de un estado (resumen del panel)
+    public List<Libro> ultimosPorEstado(EstadoLibro estado) {
+        return libroRepository.findTop10ByEstadoOrderByFechaRegistroDesc(estado);
+    }
+
     public List<Libro> librosPorEstado(EstadoLibro estado) {
         return libroRepository.findByEstadoOrderByFechaRegistroDesc(estado);
     }
 
     public long contarPorEstado(EstadoLibro estado) {
         return libroRepository.countByEstado(estado);
+    }
+
+    public long contarTodos() {
+        return libroRepository.count();
     }
 
     public Libro buscar(Long id) {

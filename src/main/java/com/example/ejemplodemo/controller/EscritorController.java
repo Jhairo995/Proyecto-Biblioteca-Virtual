@@ -1,5 +1,6 @@
 package com.example.ejemplodemo.controller;
 
+import com.example.ejemplodemo.Service.CategoriaService;
 import com.example.ejemplodemo.Service.LibroService;
 import com.example.ejemplodemo.Service.LibroService.DatosLibro;
 import com.example.ejemplodemo.model.Libro;
@@ -22,15 +23,18 @@ import java.util.Objects;
 public class EscritorController {
 
     private final LibroService libroService;
+    private final CategoriaService categoriaService;
 
-    public EscritorController(LibroService libroService) {
+    public EscritorController(LibroService libroService, CategoriaService categoriaService) {
         this.libroService = libroService;
+        this.categoriaService = categoriaService;
     }
 
     @GetMapping
     public String panel(@ModelAttribute(name = "usuarioActual", binding = false) Usuario escritor, Model model) {
         model.addAttribute("libros", libroService.librosDeEscritor(escritor));
         model.addAttribute("niveles", NivelCuenta.values());
+        model.addAttribute("categorias", categoriaService.listarActivas());
         return "escritor";
     }
 
@@ -38,7 +42,7 @@ public class EscritorController {
     public String publicar(@ModelAttribute(name = "usuarioActual", binding = false) Usuario escritor,
                            @RequestParam String titulo,
                            @RequestParam(required = false) String descripcion,
-                           @RequestParam String categoria,
+                           @RequestParam(required = false) Long categoria,
                            @RequestParam(required = false) String idioma,
                            @RequestParam(defaultValue = "GRATUITO") NivelCuenta nivelAcceso,
                            @RequestParam("archivo") MultipartFile archivo,

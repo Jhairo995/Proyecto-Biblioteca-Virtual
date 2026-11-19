@@ -23,8 +23,10 @@ public class Libro {
     @Column(length = 1000)
     private String descripcion;
 
-    @Column(nullable = false)
-    private String categoria;
+    // La columna admite NULL solo para poder migrar las bases antiguas (categoría como texto)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
 
     private String idioma;
 
@@ -50,14 +52,8 @@ public class Libro {
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 
-    // Clase CSS de la portada según la categoría (no se persiste: la entidad usa acceso por campo)
+    // Clase CSS de la portada según el color de su categoría (no se persiste: la entidad usa acceso por campo)
     public String getPortada() {
-        return switch (categoria == null ? "" : categoria) {
-            case "Desarrollo Web" -> "cover-blue";
-            case "Java" -> "cover-orange";
-            case "Bases de Datos" -> "cover-dark";
-            case "IA y Machine Learning" -> "cover-pink";
-            default -> "cover-cyan";
-        };
+        return categoria == null ? ColorPortada.CIAN.getClase() : categoria.getColor().getClase();
     }
 }

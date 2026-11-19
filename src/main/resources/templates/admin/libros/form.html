@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head(${libro == null} ? 'Registrar libro' : 'Editar libro')}"></head>
+
+<body class="admin-body">
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('libros')}"></aside>
+
+    <main class="admin-main" th:with="esNuevo=${libro == null}">
+        <header th:replace="~{fragments/admin :: topbar(${libro == null} ? 'Registrar libro' : 'Editar libro',
+                ${libro == null} ? 'Agrega un libro al catálogo con su archivo PDF.' : ${libro.titulo})}"></header>
+
+        <div class="admin-content">
+            <a th:href="@{/admin/libros}" class="btn btn-sm btn-light mb-3"><i class="bi bi-arrow-left"></i> Volver a libros</a>
+
+            <form th:action="${esNuevo} ? @{/admin/libros} : @{/admin/libros/{id}(id=${libro.id})}" th:object="${form}"
+                  method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <div th:replace="~{fragments/admin :: erroresGenerales}"></div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <section class="admin-card p-4 mb-4">
+                            <h2 class="form-section-title"><i class="bi bi-journal-text"></i> Información del libro</h2>
+
+                            <div class="mb-3">
+                                <label class="form-label campo-requerido" for="titulo">Título</label>
+                                <input type="text" class="form-control" th:field="*{titulo}" th:errorclass="is-invalid"
+                                       required minlength="2" maxlength="200" placeholder="Ej: Clean Code">
+                                <div th:replace="~{fragments/admin :: feedback('titulo', 'Ingresa un título de 2 a 200 caracteres.')}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="descripcion">
+                                    Descripción <span class="char-counter" id="contadorDescripcion"></span>
+                                </label>
+                                <textarea class="form-control" th:field="*{descripcion}" th:errorclass="is-invalid" rows="4"
+                                          maxlength="1000" data-contador="contadorDescripcion" placeholder="¿De qué trata el libro?"></textarea>
+                                <div th:replace="~{fragments/admin :: feedback('descripcion', 'La descripción admite como máximo 1000 caracteres.')}"></div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label campo-requerido" for="categoriaId">Categoría</label>
+                                    <select class="form-select" th:field="*{categoriaId}" th:errorclass="is-invalid" required>
+                                        <option value="">Selecciona una categoría</option>
+                                        <option th:each="c : ${categorias}" th:value="${c.id}"
+                                                th:text="${c.nombre + (c.activa ? '' : ' (inactiva)')}"
+                                                th:disabled="${!c.activa and (libro == null or libro.categoria == null or libro.categoria.id != c.id)}">Categoría</option>
+                                    </select>
+                                    <div th:replace="~{fragments/admin :: feedback('categoriaId', 'Selecciona una categoría.')}"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="idioma">Idioma</label>
+                                    <input type="text" class="form-control" th:field="*{idioma}" th:errorclass="is-invalid"
+                                           maxlength="50" pattern="[\p{L} ]+" placeholder="Ej: Español">
+                                    <div th:replace="~{fragments/admin :: feedback('idioma', 'El idioma solo admite letras y espacios (máximo 50).')}"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="admin-card p-4">
+                            <h2 class="form-section-title"><i class="bi bi-file-earmark-pdf"></i> Archivo PDF</h2>
+                            <div th:if="${!esNuevo and libro.archivo != null}" class="d-flex align-items-center gap-2 mb-3">
+                                <i class="bi bi-file-earmark-check text-success fs-4"></i>
+                                <span class="small">Este libro ya tiene un archivo.</span>
+                                <a th:href="@{/admin/libros/{id}/archivo(id=${libro.id})}" target="_blank" rel="noopener"
+                                   class="btn btn-sm btn-light"><i class="bi bi-eye"></i> Ver PDF actual</a>
+                            </div>
+                            <label class="form-label" th:classappend="${esNuevo} ? 'campo-requerido'" for="archivo"
+                                   th:text="${esNuevo} ? 'Archivo del libro (PDF, máx. 20 MB)' : 'Reemplazar archivo (opcional, PDF, máx. 20 MB)'">Archivo</label>
+                            <input type="file" class="form-control" id="archivo" name="archivo" accept="application/pdf,.pdf" data-pdf
+                                   th:classappend="${errorArchivo != null} ? 'is-invalid'" th:required="${esNuevo}">
+                            <div class="invalid-feedback" th:text="${errorArchivo ?: 'Selecciona un archivo PDF de hasta 20 MB.'}">Selecciona un PDF.</div>
+                            <div th:if="${#fields.hasAnyErrors() or errorArchivo != null}" class="form-text text-warning-emphasis">
+                                <i class="bi bi-info-circle"></i> Por seguridad, el navegador no conserva el archivo: vuelve a seleccionarlo antes de guardar.
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <section class="admin-card p-4 mb-4">
+                            <h2 class="form-section-title"><i class="bi bi-sliders"></i> Publicación</h2>
+
+                            <div class="mb-3">
+                                <label class="form-label campo-requerido" for="estado">Estado</label>
+                                <select class="form-select" th:field="*{estado}" th:errorclass="is-invalid" required>
+                                    <option th:each="e : ${estados}" th:value="${e}"
+                                            th:text="${e.name() == 'APROBADO'} ? 'Publicado (visible en el catálogo)' : (${e.name() == 'PENDIENTE'} ? 'En revisión' : 'Rechazado')">Estado</option>
+                                </select>
+                                <div th:replace="~{fragments/admin :: feedback('estado', 'Selecciona el estado del libro.')}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="form-label d-block campo-requerido">Acceso</span>
+                                <div class="btn-group w-100" role="group" aria-label="Nivel de acceso">
+                                    <th:block th:each="n : ${niveles}">
+                                        <input type="radio" class="btn-check" th:field="*{nivelAcceso}" th:value="${n}" required>
+                                        <label class="btn btn-outline-primary" th:for="${#ids.prev('nivelAcceso')}">
+                                            <i class="bi" th:classappend="${n.name() == 'PREMIUM'} ? 'bi-stars' : 'bi-unlock'"></i>
+                                            <span th:text="${n.name() == 'PREMIUM'} ? 'Premium' : 'Gratuito'">Acceso</span>
+                                        </label>
+                                    </th:block>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('nivelAcceso')}" th:errors="*{nivelAcceso}">Error</div>
+                            </div>
+
+                            <div>
+                                <label class="form-label" for="escritorId">Escritor</label>
+                                <select class="form-select" th:field="*{escritorId}" th:errorclass="is-invalid">
+                                    <option value="">Sin escritor (publicado por la biblioteca)</option>
+                                    <option th:each="e : ${escritores}" th:value="${e.id}"
+                                            th:text="${e.nombre + ' · ' + e.correo + (e.activo and e.acceso.name() == 'ESCRITOR' ? '' : ' (ya no es escritor activo)')}">Escritor</option>
+                                </select>
+                                <div th:replace="~{fragments/admin :: feedback('escritorId', 'Selecciona un escritor activo.')}"></div>
+                                <div class="form-text">Solo aparecen usuarios activos con acceso de escritor.</div>
+                            </div>
+                        </section>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2-circle"></i>
+                                <span th:text="${esNuevo} ? 'Registrar libro' : 'Guardar cambios'">Guardar</span>
+                            </button>
+                            <a th:href="@{/admin/libros}" class="btn btn-light">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<th:block th:replace="~{fragments/admin :: scripts}"></th:block>
+</body>
+</html>

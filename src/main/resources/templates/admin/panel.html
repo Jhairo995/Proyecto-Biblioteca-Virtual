@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('Panel general')}"></head>
+
+<body class="admin-body">
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('panel')}"></aside>
+
+    <main class="admin-main">
+        <header th:replace="~{fragments/admin :: topbar('Panel general', ${'Hola, ' + (usuarioActual?.nombre ?: 'administrador') + '. Este es el estado de la biblioteca.'})}"></header>
+
+        <div class="admin-content">
+            <div th:replace="~{fragments/admin :: alertas}"></div>
+
+            <!-- Métricas -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6 col-xl-3">
+                    <a th:href="@{/admin/usuarios}" class="admin-card stat-card">
+                        <span class="stat-icon"><i class="bi bi-people-fill"></i></span>
+                        <div>
+                            <div class="stat-value" th:text="${totalUsuarios}">0</div>
+                            <div class="stat-label">Usuarios registrados</div>
+                            <small class="text-success fw-semibold" th:text="|${usuariosActivos} activos|">0 activos</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <a th:href="@{/admin/libros(estado='APROBADO')}" class="admin-card stat-card">
+                        <span class="stat-icon cyan"><i class="bi bi-journal-bookmark-fill"></i></span>
+                        <div>
+                            <div class="stat-value" th:text="${totalAprobados}">0</div>
+                            <div class="stat-label">Libros publicados</div>
+                            <small class="text-muted" th:text="|de ${totalLibros} registrados|">de 0 registrados</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <a th:href="@{/admin/libros(estado='PENDIENTE')}" class="admin-card stat-card">
+                        <span class="stat-icon amber"><i class="bi bi-hourglass-split"></i></span>
+                        <div>
+                            <div class="stat-value" th:text="${totalPendientes}">0</div>
+                            <div class="stat-label">Pendientes de revisión</div>
+                            <small class="text-muted" th:text="|${totalRechazados} rechazados|">0 rechazados</small>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <a th:href="@{/admin/categorias}" class="admin-card stat-card">
+                        <span class="stat-icon green"><i class="bi bi-tags-fill"></i></span>
+                        <div>
+                            <div class="stat-value" th:text="${#lists.size(categorias)}">0</div>
+                            <div class="stat-label">Categorías</div>
+                            <small class="text-muted" th:text="|${#lists.size(roles)} roles configurados|">0 roles</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <!-- Cola de aprobación -->
+                <div class="col-xl-8">
+                    <section class="admin-card h-100">
+                        <div class="admin-card-header">
+                            <h2><i class="bi bi-inbox text-primary"></i> Libros pendientes de aprobación</h2>
+                            <a th:href="@{/admin/libros(estado='PENDIENTE')}" class="btn btn-sm btn-light">Ver en libros</a>
+                        </div>
+                        <div th:if="${#lists.isEmpty(pendientes)}" class="empty-state">
+                            <i class="bi bi-check2-all"></i>
+                            No hay libros esperando revisión.
+                        </div>
+                        <div th:unless="${#lists.isEmpty(pendientes)}" class="table-responsive">
+                            <table class="table admin-table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Libro</th>
+                                        <th>Escritor</th>
+                                        <th>Acceso</th>
+                                        <th>Enviado</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="libro : ${pendientes}">
+                                        <td>
+                                            <div class="cell-main">
+                                                <span class="cover-chip" th:classappend="${libro.portada}"><i class="bi bi-book"></i></span>
+                                                <span>
+                                                    <strong th:text="${libro.titulo}">Título</strong>
+                                                    <small th:text="${libro.categoria?.nombre ?: 'Sin categoría'}">Categoría</small>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td th:text="${libro.escritor?.nombre ?: '—'}">Escritor</td>
+                                        <td><span class="badge badge-soft" th:text="${libro.nivelAcceso}">GRATUITO</span></td>
+                                        <td class="text-nowrap" th:text="${#temporals.format(libro.fechaRegistro, 'dd/MM/yyyy HH:mm')}">fecha</td>
+                                        <td class="text-end">
+                                            <div class="acciones">
+                                                <a th:href="@{/admin/libros/{id}/archivo(id=${libro.id})}" target="_blank" rel="noopener"
+                                                   class="btn btn-icon btn-outline-primary" title="Revisar PDF" aria-label="Revisar PDF">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <form th:action="@{/admin/libros/{id}/aprobar(id=${libro.id})}" method="post">
+                                                    <button type="submit" class="btn btn-icon btn-success" title="Aprobar" aria-label="Aprobar">
+                                                        <i class="bi bi-check-lg"></i>
+                                                    </button>
+                                                </form>
+                                                <form th:action="@{/admin/libros/{id}/rechazar(id=${libro.id})}" method="post">
+                                                    <button type="submit" class="btn btn-icon btn-outline-danger" title="Rechazar" aria-label="Rechazar">
+                                                        <i class="bi bi-x-lg"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Accesos rápidos -->
+                <div class="col-xl-4">
+                    <section class="admin-card h-100">
+                        <div class="admin-card-header">
+                            <h2><i class="bi bi-lightning-charge text-primary"></i> Accesos rápidos</h2>
+                        </div>
+                        <div class="p-3 d-grid gap-2">
+                            <a th:href="@{/admin/libros/nuevo}" class="btn btn-primary"><i class="bi bi-journal-plus"></i> Registrar libro</a>
+                            <a th:href="@{/admin/usuarios/nuevo}" class="btn btn-outline-primary"><i class="bi bi-person-plus"></i> Nuevo usuario</a>
+                            <a th:href="@{/admin/categorias/nuevo}" class="btn btn-outline-primary"><i class="bi bi-tag"></i> Nueva categoría</a>
+                            <a th:href="@{/admin/roles/nuevo}" class="btn btn-outline-primary"><i class="bi bi-shield-plus"></i> Nuevo rol</a>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Libros por categoría -->
+                <div class="col-lg-6">
+                    <section class="admin-card h-100">
+                        <div class="admin-card-header">
+                            <h2><i class="bi bi-bar-chart text-primary"></i> Libros por categoría</h2>
+                            <a th:href="@{/admin/categorias}" class="btn btn-sm btn-light">Gestionar</a>
+                        </div>
+                        <div class="p-4">
+                            <p th:if="${#lists.isEmpty(categorias)}" class="text-muted mb-0">Aún no hay categorías.</p>
+                            <div th:each="c : ${categorias}" class="meter-row"
+                                 th:with="cantidad=${librosPorCategoria[c.id] ?: 0}, porcentaje=${totalLibros == 0 ? 0 : cantidad * 100 / totalLibros}">
+                                <div class="d-flex justify-content-between small">
+                                    <span class="fw-semibold"><i class="bi" th:classappend="${c.icono}"></i> <span th:text="${c.nombre}">Categoría</span></span>
+                                    <span class="text-muted" th:text="|${cantidad} libro(s)|">0 libros</span>
+                                </div>
+                                <div class="meter-track" role="progressbar" th:aria-valuenow="${porcentaje}" aria-valuemin="0" aria-valuemax="100"
+                                     th:aria-label="${c.nombre}">
+                                    <div class="meter-fill" th:style="|width: ${porcentaje}%|"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Usuarios por rol -->
+                <div class="col-lg-6">
+                    <section class="admin-card h-100">
+                        <div class="admin-card-header">
+                            <h2><i class="bi bi-person-badge text-primary"></i> Usuarios por rol</h2>
+                            <a th:href="@{/admin/roles}" class="btn btn-sm btn-light">Gestionar</a>
+                        </div>
+                        <div class="p-4">
+                            <div th:each="r : ${roles}" class="meter-row"
+                                 th:with="cantidad=${usuariosPorRol[r.id] ?: 0}, porcentaje=${totalUsuarios == 0 ? 0 : cantidad * 100 / totalUsuarios}">
+                                <div class="d-flex justify-content-between small">
+                                    <span class="fw-semibold" th:text="${r.nombre}">Rol</span>
+                                    <span class="text-muted" th:text="|${cantidad} usuario(s)|">0 usuarios</span>
+                                </div>
+                                <div class="meter-track" role="progressbar" th:aria-valuenow="${porcentaje}" aria-valuemin="0" aria-valuemax="100"
+                                     th:aria-label="${r.nombre}">
+                                    <div class="meter-fill" th:style="|width: ${porcentaje}%|"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<th:block th:replace="~{fragments/admin :: scripts}"></th:block>
+</body>
+</html>

@@ -39,16 +39,14 @@
                         <div class="col-sm-6">
                             <label class="form-label small fw-semibold" for="categoria">Categoría</label>
                             <select class="form-select" id="categoria" name="categoria" required>
-                                <option>Desarrollo Web</option>
-                                <option>Java</option>
-                                <option>Bases de Datos</option>
-                                <option>IA y Machine Learning</option>
-                                <option>Otros</option>
+                                <option value="">Selecciona una categoría</option>
+                                <option th:each="c : ${categorias}" th:value="${c.id}" th:text="${c.nombre}">Categoría</option>
                             </select>
                         </div>
                         <div class="col-sm-6">
                             <label class="form-label small fw-semibold" for="idioma">Idioma</label>
-                            <input type="text" class="form-control" id="idioma" name="idioma" value="Español" maxlength="50">
+                            <input type="text" class="form-control" id="idioma" name="idioma" value="Español" maxlength="50"
+                                   pattern="[\p{L} ]+" title="Solo letras y espacios">
                         </div>
                     </div>
                     <div class="mb-3">
@@ -113,7 +111,7 @@
                             <tr th:each="libro : ${libros}">
                                 <td>
                                     <div class="fw-semibold" th:text="${libro.titulo}">Título</div>
-                                    <small class="text-muted" th:text="${libro.categoria + ' · ' + #temporals.format(libro.fechaRegistro, 'dd/MM/yyyy')}">Categoría</small>
+                                    <small class="text-muted" th:text="${(libro.categoria?.nombre ?: 'Sin categoría') + ' · ' + #temporals.format(libro.fechaRegistro, 'dd/MM/yyyy')}">Categoría</small>
                                 </td>
                                 <td><span class="badge badge-soft" th:text="${libro.nivelAcceso}">GRATUITO</span></td>
                                 <td>

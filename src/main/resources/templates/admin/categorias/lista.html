@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head('Categorías')}"></head>
+
+<body class="admin-body">
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('categorias')}"></aside>
+
+    <main class="admin-main">
+        <header th:replace="~{fragments/admin :: topbar('Categorías', 'Organiza el catálogo y define cómo se ve cada categoría en el sitio.')}"></header>
+
+        <div class="admin-content">
+            <div th:replace="~{fragments/admin :: alertas}"></div>
+
+            <div class="admin-page-head">
+                <p class="mb-0 text-muted" th:text="|${#lists.size(categorias)} categoría(s) · las inactivas no se muestran en el sitio ni se ofrecen para libros nuevos|">0 categorías</p>
+                <a th:href="@{/admin/categorias/nuevo}" class="btn btn-primary"><i class="bi bi-tag"></i> Nueva categoría</a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(categorias)}" class="admin-card empty-state">
+                <i class="bi bi-tags"></i>
+                Todavía no hay categorías. Crea la primera para empezar a organizar el catálogo.
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-xl-4" th:each="c : ${categorias}" th:with="cantidad=${librosPorCategoria[c.id] ?: 0}">
+                    <article class="admin-card entity-card">
+                        <div class="categoria-cover" th:classappend="${c.color.clase + (c.activa ? '' : ' inactiva')}">
+                            <i class="bi" th:classappend="${c.icono}"></i>
+                            <h3 th:text="${c.nombre}">Categoría</h3>
+                        </div>
+                        <div class="entity-body">
+                            <p class="text-muted small mb-0" th:text="${c.descripcion ?: 'Sin descripción.'}">Descripción</p>
+                        </div>
+                        <div class="entity-footer">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="estado-badge" th:classappend="${c.activa} ? 'estado-activo' : 'estado-inactivo'"
+                                      th:text="${c.activa} ? 'Activa' : 'Inactiva'">Activa</span>
+                                <a th:href="@{/admin/libros(categoria=${c.id})}" class="small fw-semibold text-decoration-none"
+                                   th:text="|${cantidad} libro(s)|">0 libros</a>
+                            </div>
+                            <div class="acciones">
+                                <a th:href="@{/admin/categorias/{id}/editar(id=${c.id})}" class="btn btn-icon btn-outline-primary" title="Editar" aria-label="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button th:if="${cantidad == 0}" type="button" class="btn btn-icon btn-outline-danger"
+                                        data-bs-toggle="modal" data-bs-target="#modalEliminar" title="Eliminar" aria-label="Eliminar"
+                                        th:attr="data-accion=@{/admin/categorias/{id}/eliminar(id=${c.id})},data-nombre=${c.nombre}">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                                <span th:unless="${cantidad == 0}" class="d-inline-block" tabindex="0"
+                                      title="Tiene libros: muévelos a otra categoría o desactívala">
+                                    <button type="button" class="btn btn-icon btn-outline-secondary" disabled aria-label="Eliminar (no disponible)">
+                                        <i class="bi bi-lock"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div th:replace="~{fragments/admin :: modalEliminar}"></div>
+<th:block th:replace="~{fragments/admin :: scripts}"></th:block>
+</body>
+</html>

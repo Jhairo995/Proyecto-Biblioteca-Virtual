@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/admin :: head(${rol == null} ? 'Nuevo rol' : 'Editar rol')}"></head>
+
+<body class="admin-body">
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('roles')}"></aside>
+
+    <main class="admin-main" th:with="esNuevo=${rol == null}, esSistema=${rol != null and rol.sistema}">
+        <header th:replace="~{fragments/admin :: topbar(${rol == null} ? 'Nuevo rol' : 'Editar rol',
+                ${rol == null} ? 'Crea un rol y elige el nivel de acceso que otorga.' : ${rol.nombre})}"></header>
+
+        <div class="admin-content">
+            <a th:href="@{/admin/roles}" class="btn btn-sm btn-light mb-3"><i class="bi bi-arrow-left"></i> Volver a roles</a>
+
+            <div th:if="${esSistema}" class="alert alert-info admin-alert">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Este es un rol del sistema: solo puedes cambiar su descripción.</span>
+            </div>
+
+            <form th:action="${esNuevo} ? @{/admin/roles} : @{/admin/roles/{id}(id=${rol.id})}" th:object="${form}"
+                  method="post" class="needs-validation" novalidate>
+                <div th:replace="~{fragments/admin :: erroresGenerales}"></div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <section class="admin-card p-4">
+                            <h2 class="form-section-title"><i class="bi bi-shield"></i> Datos del rol</h2>
+
+                            <div class="mb-3">
+                                <label class="form-label campo-requerido" for="nombre">Nombre</label>
+                                <input type="text" class="form-control" th:field="*{nombre}" th:errorclass="is-invalid"
+                                       required minlength="3" maxlength="50" pattern="[\p{L}0-9 ._\-]+"
+                                       th:readonly="${esSistema}" placeholder="Ej: Bibliotecario">
+                                <div th:replace="~{fragments/admin :: feedback('nombre', 'Ingresa un nombre de 3 a 50 caracteres (letras, números, espacios, puntos y guiones).')}"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label" for="descripcion">
+                                    Descripción <span class="char-counter" id="contadorDescripcion"></span>
+                                </label>
+                                <textarea class="form-control" th:field="*{descripcion}" th:errorclass="is-invalid" rows="3"
+                                          maxlength="255" data-contador="contadorDescripcion"
+                                          placeholder="¿Qué hace un usuario con este rol?"></textarea>
+                                <div th:replace="~{fragments/admin :: feedback('descripcion', 'La descripción admite como máximo 255 caracteres.')}"></div>
+                            </div>
+
+                            <span class="form-label d-block campo-requerido">Nivel de acceso</span>
+                            <input th:if="${esSistema}" type="hidden" name="acceso" th:value="*{acceso}">
+                            <div class="row g-3">
+                                <div class="col-md-4" th:each="a : ${accesos}">
+                                    <input type="radio" class="btn-check" th:field="*{acceso}" th:value="${a}" th:disabled="${esSistema}" required>
+                                    <label class="option-card" th:for="${#ids.prev('acceso')}">
+                                        <i class="bi" th:classappend="${a.name() == 'ADMINISTRADOR'} ? 'bi-shield-lock' : (${a.name() == 'ESCRITOR'} ? 'bi-pen' : 'bi-book')"></i>
+                                        <span>
+                                            <strong class="d-block" th:text="${a.etiqueta}">Lector</strong>
+                                            <small class="text-muted"
+                                                   th:text="${a.name() == 'ADMINISTRADOR'} ? 'Acceso completo a este panel.' : (${a.name() == 'ESCRITOR'} ? 'Publica libros que pasan por revisión.' : 'Lee el catálogo y gestiona su lista.')">Descripción</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="text-danger small mt-2" th:if="${#fields.hasErrors('acceso')}" th:errors="*{acceso}">Error</div>
+                        </section>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <section class="admin-card p-4 mb-3">
+                            <h2 class="form-section-title"><i class="bi bi-lightbulb"></i> ¿Cómo funciona?</h2>
+                            <p class="small text-muted mb-2">El nivel de acceso decide a qué panel entra el usuario al iniciar sesión.</p>
+                            <p class="small text-muted mb-0">Puedes crear varios roles con el mismo acceso (por ejemplo, «Moderador» con acceso de administrador) para organizar mejor a tus usuarios.</p>
+                        </section>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check2-circle"></i>
+                                <span th:text="${esNuevo} ? 'Crear rol' : 'Guardar cambios'">Guardar</span>
+                            </button>
+                            <a th:href="@{/admin/roles}" class="btn btn-light">Cancelar</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<th:block th:replace="~{fragments/admin :: scripts}"></th:block>
+</body>
+</html>

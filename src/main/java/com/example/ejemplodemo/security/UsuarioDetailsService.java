@@ -23,9 +23,15 @@ public class UsuarioDetailsService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + correo));
 
+        if (usuario.getRol() == null) {
+            throw new UsernameNotFoundException("El usuario no tiene un rol asignado: " + correo);
+        }
+
+        // El rol otorga su nivel de acceso como autoridad (ROLE_LECTOR, ROLE_ESCRITOR o ROLE_ADMINISTRADOR)
         return User.withUsername(usuario.getCorreo())
                 .password(usuario.getContrasena())
-                .roles(usuario.getRol().name())
+                .roles(usuario.getRol().getAcceso().name())
+                .disabled(!usuario.isActivo())
                 .build();
     }
 }

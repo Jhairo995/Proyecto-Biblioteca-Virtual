@@ -1,0 +1,41 @@
+# Levanta la aplicación + base de datos con un solo comando:
+#   docker compose up --build
+# Las claves se leen del archivo .env (copia .env.example a .env y cámbialas),
+# o de variables de entorno: ADMIN_PASSWORD=MiClaveSegura DB_PASSWORD=OtraClave docker compose up --build
+# DB_PASSWORD es obligatoria: si no se define, compose se detiene con un mensaje claro.
+# APP_PORT (opcional, por defecto 8081) cambia el puerto del host si 8081 ya está ocupado.
+services:
+  db:
+    # 10.11 (LTS): MariaDB 11+ hace que el driver MySQL consulte una columna que no existe (KEYWORDS.RESERVED)
+    image: mariadb:10.11
+    container_name: biblioteca-db
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD}
+      MARIADB_DATABASE: biblioteca_virtual
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: biblioteca-app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8081}:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/biblioteca_virtual?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    volumes:
+      - uploads_data:/app/uploads
+
+volumes:
+  db_data:
+  uploads_data:

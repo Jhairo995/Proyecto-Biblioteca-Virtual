@@ -37,20 +37,6 @@ public class LectorService {
         return libroRepository.findByEstadoOrderByFechaRegistroDesc(EstadoLibro.APROBADO);
     }
 
-    // Catálogo filtrado por categoría; sin categoría (null o en blanco) devuelve todo el catálogo
-    public List<Libro> catalogo(String categoria) {
-        if (categoria == null || categoria.isBlank()) {
-            return catalogo();
-        }
-        return libroRepository.findByEstadoAndCategoriaIgnoreCaseOrderByFechaRegistroDesc(EstadoLibro.APROBADO, categoria.trim());
-    }
-
-    // Cada vez que un lector abre un libro en el visor cuenta como una vista
-    @Transactional
-    public void registrarVista(Libro libro) {
-        libroRepository.sumarVista(libro.getId());
-    }
-
     public List<Lectura> miLista(Usuario lector) {
         return lecturaRepository.findByLectorOrderByFechaAgregadoDesc(lector);
     }

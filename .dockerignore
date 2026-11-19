@@ -1,0 +1,9 @@
+target/
+.git/
+.idea/
+.vscode/
+uploads/
+*.md
+k8s/
+docs/
+.env

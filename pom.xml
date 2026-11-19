@@ -65,11 +65,13 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa-test</artifactId>
             <scope>test</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation-test</artifactId>
@@ -78,6 +80,23 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- ===== Pruebas (APF3): JUnit 5 + Mockito, H2 en memoria y Selenium ===== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>4.27.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

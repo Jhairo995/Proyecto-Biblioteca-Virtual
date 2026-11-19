@@ -1,0 +1,17 @@
+# Jenkins local para demostrar la integración continua:
+#   docker compose -f docker-compose.jenkins.yml up -d
+# Abrir http://localhost:8080 y crear un Pipeline apuntando al repositorio (usa el Jenkinsfile).
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk21
+    container_name: jenkins
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock   # permite que Jenkins construya imágenes Docker
+
+volumes:
+  jenkins_home:

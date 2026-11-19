@@ -3,12 +3,10 @@ package com.example.ejemplodemo.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "libros")
@@ -45,22 +43,12 @@ public class Libro {
     // Nombre del archivo almacenado en disco
     private String archivo;
 
-    // Veces que un lector abrió el libro en el visor (LectorService.registrarVista).
-    // El DEFAULT 0 permite que ddl-auto=update agregue la columna a tablas con libros existentes
-    @ColumnDefault("0")
-    @Column(nullable = false)
-    private long vistas;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "escritor_id")
     private Usuario escritor;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaRegistro = LocalDateTime.now();
-
-    // Categorías del catálogo: las mismas que ofrece el formulario del escritor (escritor.html)
-    public static final List<String> CATEGORIAS =
-            List.of("Desarrollo Web", "Java", "Bases de Datos", "IA y Machine Learning", "Otros");
 
     // Clase CSS de la portada según la categoría (no se persiste: la entidad usa acceso por campo)
     public String getPortada() {

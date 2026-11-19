@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ejemplo de clase')}"></head>
+
+<body>
+<nav th:replace="~{fragments/layout :: navbar('ejemplo')}"></nav>
+
+<section class="page-hero">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <div class="container">
+        <span class="hero-badge mb-3"><i class="bi bi-mortarboard"></i> Ejemplo de clase</span>
+        <h1 class="fw-bold h2 mb-1" th:text="${nombreCurso}">Curso</h1>
+        <p class="mb-0">Variables, constantes y estructuras de control en Java mostradas con Thymeleaf.</p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card panel-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-box text-primary"></i> Variables</h5>
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr><th>Nombre (String)</th><td th:text="${nombre}">-</td></tr>
+                        <tr><th>Edad (int)</th><td th:text="${edad}">-</td></tr>
+                        <tr><th>ID estudiante (long)</th><td th:text="${idEstudiante}">-</td></tr>
+                        <tr><th>Nivel de acceso (byte)</th><td th:text="${nivelAcceso}">-</td></tr>
+                        <tr><th>Año de ingreso (short)</th><td th:text="${anioIngreso}">-</td></tr>
+                        <tr><th>Peso kg (float)</th><td th:text="${pesoKg}">-</td></tr>
+                        <tr><th>Nota (double)</th><td th:text="${nota}">-</td></tr>
+                        <tr><th>Sección (char)</th><td th:text="${seccion}">-</td></tr>
+                        <tr><th>Matriculado (boolean)</th><td th:text="${estaMatriculado}">-</td></tr>
+                        <tr><th>Membresía</th><td th:text="${tipoMembresia}">-</td></tr>
+                        <tr><th>Tasa IGV (constante)</th><td th:text="${tasaIgv}">-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card panel-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-diagram-3 text-primary"></i> Estructuras de control</h5>
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr><th>Validación de edad (if/else)</th><td th:text="${validacionEdad}">-</td></tr>
+                        <tr><th>Estado académico (if/else)</th><td th:text="${estadoAcademico}">-</td></tr>
+                        <tr><th>Beneficio (switch)</th><td th:text="${beneficioMembresia}">-</td></tr>
+                        <tr><th>Matrícula (ternario)</th><td th:text="${estadoMatricula}">-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

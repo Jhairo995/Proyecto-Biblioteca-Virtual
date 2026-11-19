@@ -34,3 +34,9 @@ build/
 
 ### Archivos subidos por los usuarios ###
 uploads/
+
+### Secretos de Kubernetes ###
+k8s/secret.yaml
+
+### Secretos de Docker Compose ###
+.env

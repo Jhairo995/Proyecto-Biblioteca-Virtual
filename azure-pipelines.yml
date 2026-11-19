@@ -1,0 +1,92 @@
+# Azure Pipelines — Biblioteca Virtual
+# Variables a definir en la biblioteca de variables / service connections del proyecto de Azure DevOps:
+#   dockerRegistryServiceConnection : conexión de servicio a Azure Container Registry (ACR)
+#   imageRepository                 : nombre de la imagen, p. ej. biblioteca-virtual
+#   containerRegistry               : p. ej. miacr.azurecr.io
+trigger:
+  branches:
+    include: [main, develop]
+
+pr:
+  branches:
+    include: [main]
+
+variables:
+  imageRepository: 'biblioteca-virtual'
+  containerRegistry: 'miacr.azurecr.io'
+  dockerRegistryServiceConnection: 'acr-connection'
+  tag: '$(Build.BuildId)'
+
+stages:
+  - stage: Build
+    displayName: Compilar y probar
+    jobs:
+      - job: MavenBuild
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: |
+              export JAVA_HOME=$JAVA_HOME_25_X64
+              export PATH=$JAVA_HOME/bin:$PATH
+              java -version
+              chmod +x mvnw
+              ./mvnw -B clean verify -Dspring.profiles.active=test
+            displayName: Maven verify (JUnit + Mockito, H2)
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+
+          - publish: $(System.DefaultWorkingDirectory)/target
+            artifact: jar
+            displayName: Publicar artefacto .jar
+
+  - stage: Docker
+    displayName: Imagen Docker
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: BuildPush
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: Docker@2
+            displayName: Construir y publicar en ACR
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: Dockerfile
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(tag)
+                latest
+
+  - stage: Deploy
+    displayName: Despliegue en AKS (Kubernetes)
+    dependsOn: Docker
+    condition: succeeded()
+    jobs:
+      - deployment: DeployAKS
+        pool:
+          vmImage: ubuntu-latest
+        environment: 'biblioteca-produccion'   # entorno con aprobación manual
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                # El manifiesto usa el marcador IMAGEN_APP: se reemplaza por la imagen recién publicada
+                - script: sed -i "s|IMAGEN_APP|$(containerRegistry)/$(imageRepository):$(tag)|" k8s/app-deployment.yaml
+                  displayName: Definir imagen del despliegue
+                - task: KubernetesManifest@1
+                  inputs:
+                    action: deploy
+                    namespace: biblioteca
+                    manifests: |
+                      k8s/namespace.yaml
+                      k8s/mariadb.yaml
+                      k8s/app-deployment.yaml
+                      k8s/app-service.yaml
+                    containers: $(containerRegistry)/$(imageRepository):$(tag)

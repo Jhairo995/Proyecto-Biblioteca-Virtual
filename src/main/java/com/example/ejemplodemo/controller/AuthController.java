@@ -2,7 +2,7 @@ package com.example.ejemplodemo.controller;
 
 import com.example.ejemplodemo.model.Usuario;
 import com.example.ejemplodemo.Service.UsuarioService;
-import com.example.ejemplodemo.Service.UsuarioService.DatosRegistro;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +20,9 @@ public class AuthController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<?> registrarUsuario(@RequestBody DatosRegistro datos) {
+    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
         try {
-            Usuario nuevoUsuario = usuarioService.registrarUsuario(datos);
+            Usuario nuevoUsuario = usuarioService.registrarUsuario(usuario);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                     "mensaje", "Usuario registrado exitosamente",
                     "id", nuevoUsuario.getId(),
@@ -33,6 +33,10 @@ public class AuthController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                     "error", e.getMessage()));
+        } catch (DataIntegrityViolationException e) {
+            // Dos registros simultáneos con el mismo correo o DNI: la BD rechaza el duplicado
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                    "error", "El correo o el DNI ya están registrados en el sistema."));
         }
     }
 }
